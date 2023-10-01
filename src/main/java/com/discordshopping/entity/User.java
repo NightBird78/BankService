@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -17,8 +19,11 @@ import lombok.*;
 public class User {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "discord_id")
     private Long id;
+
+    @Column(name = "tax_code")
+    private String taxCode;
 
     @Column(name = "user_name")
     private String nickName;
@@ -31,4 +36,10 @@ public class User {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "created_at")
+    private final LocalDateTime createdAt = LocalDateTime.now();
 }

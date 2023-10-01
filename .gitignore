@@ -34,7 +34,10 @@ build/
 /mvnw.cmd
 /mvnw
 /.mvn/
+
 /src/main/java/com/discordshopping/manipulate.sql
 /src/main/java/com/discordshopping/resource/
 /src/main/java/com/discordshopping/bot/util/Constant.java
 /src/test/
+/src/main/java/com/discordshopping/service/Main.java
+/src/main/java/com/discordshopping/Main.java

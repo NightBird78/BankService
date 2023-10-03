@@ -10,5 +10,5 @@ public interface UserService {
     Optional<User> getById(Long id);
 
     User create(UserDto userDto);
-    void create(User user);
+    boolean create(User user);
 }

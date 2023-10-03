@@ -67,13 +67,25 @@ public class Bot extends ListenerAdapter {
                         .queue();
             }
             case "register" -> {
-                Long userId = Long.parseLong(event.getUser().getId());
-                String tax_code = Objects.requireNonNull(event.getOption("taxcode")).getAsString();
-                String userName = event.getUser().getName();
-                String firstName = Objects.requireNonNull(event.getOption("firstname")).getAsString();
-                String lastName = Objects.requireNonNull(event.getOption("lastname")).getAsString();
-                String email = Objects.requireNonNull(event.getOption("email")).getAsString();
-                String address = Objects.requireNonNull(event.getOption("address")).getAsString();
+                long userId;
+                String tax_code;
+                String userName;
+                String firstName;
+                String lastName;
+                String email;
+                String address;
+                try {
+                    userId = Long.parseLong(event.getUser().getId());
+                    tax_code = Objects.requireNonNull(event.getOption("taxcode")).getAsString();
+                    userName = event.getUser().getName();
+                    firstName = Objects.requireNonNull(event.getOption("firstname")).getAsString();
+                    lastName = Objects.requireNonNull(event.getOption("lastname")).getAsString();
+                    email = Objects.requireNonNull(event.getOption("email")).getAsString();
+                    address = Objects.requireNonNull(event.getOption("address")).getAsString();
+                } catch (Exception e){
+                    event.reply("Some field is empty!").queue();
+                    return;
+                }
 
                 Pattern pattern = Pattern.compile("[a-zA-Z0-9_\\.]+@[a-z]+\\.[a-z]+");
 
@@ -99,7 +111,10 @@ public class Bot extends ListenerAdapter {
 
                 logger.info(userName + " was success registered");
 
-                userService.create(user);
+                if (!userService.create(user)){
+                    event.reply("You already registered").queue();
+                    return;
+                }
 
                 event.reply("success to register").queue();
             }

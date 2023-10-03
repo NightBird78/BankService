@@ -34,7 +34,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void create(User user) {
-    userRepository.save(user);
+    public boolean create(User user) {
+        if (userRepository.findById(user.getId()).isPresent()){
+            return false;
+        }
+        userRepository.save(user);
+        return true;
     }
 }

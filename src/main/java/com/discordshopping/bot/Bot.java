@@ -15,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -73,17 +75,31 @@ public class Bot extends ListenerAdapter {
                 String email = Objects.requireNonNull(event.getOption("email")).getAsString();
                 String address = Objects.requireNonNull(event.getOption("address")).getAsString();
 
-                Pattern pattern = Pattern.compile("[a-zA-Z0-9_]+@[a-z]+\\.[a-z]+");
-                if (!pattern.matcher(email).find()){
+                Pattern pattern = Pattern.compile("[a-zA-Z0-9_\\.]+@[a-z]+\\.[a-z]+");
+
+                Matcher matcher = pattern.matcher(email);
+                if (matcher.find()) {
+                    if (!email.equals(matcher.group())) {
+                        event.reply("invalid email").queue();
+                        return;
+                    }
+                } else {
                     event.reply("invalid email").queue();
                     return;
                 }
-                User user = new User(userId, tax_code, userName, firstName, lastName, email, address);
+                User user = new User(
+                        userId,
+                        tax_code,
+                        userName,
+                        firstName,
+                        lastName,
+                        email,
+                        address,
+                        LocalDateTime.now());
 
-                logger.info(userName+" was success registered");
+                logger.info(userName + " was success registered");
 
                 userService.create(user);
-
 
                 event.reply("success to register").queue();
             }

@@ -22,10 +22,101 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             <column name="user_name" type="varchar(50)"/>
             <column name="first_name" type="varchar(50)"/>
             <column name="last_name" type="varchar(50)"/>
+            <column name="annual_earnings" type="decimal(15,2)"/>
             <column name="email" type="varchar(60)"/>
+            <column name="password" type="varchar(36)"/>
             <column name="address" type="varchar(80)"/>
             <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
 
+    <changeSet id="create accounts table" author="NightBird78">
+        <preConditions onFail="CONTINUE" onFailMessage="Table accounts already exists">
+            <not>
+                <tableExists tableName="accounts"/>
+            </not>
+        </preConditions>
+        <createTable tableName="accounts">
+            <column name="id" type="binary(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+                <constraints unique="true" foreignKeyName="client_id" references="users(discord_id)"/>
+            </column>
+            <column name="account_status" type="varchar(50)"/>
+            <column name="balance" type="decimal(15,2)"/>
+            <column name="currency_code" type="varchar(3)"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create products table" author="NightBird78">
+        <preConditions onFail="CONTINUE" onFailMessage="Table products already exists">
+            <not>
+                <tableExists tableName="products"/>
+            </not>
+        </preConditions>
+        <createTable tableName="products">
+            <column name="id" type="binary(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_type" type="varchar(50)"/>
+            <column name="product_status" type="varchar(50)"/>
+            <column name="interest_rate" type="decimal(4,2)"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create transactions table" author="NightBird78">
+        <preConditions onFail="CONTINUE" onFailMessage="Table transactions already exists">
+            <not>
+                <tableExists tableName="transactions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="transactions">
+            <column name="id" type="binary(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="debit_account_id" type="binary(16)">
+                <constraints foreignKeyName="debit_account_id" references="accounts(id)"/>
+            </column>
+            <column name="credit_account_id" type="binary(16)">
+                <constraints foreignKeyName="credit_account_id" references="accounts(id)"/>
+            </column>
+            <column name="transaction_type" type="varchar(50)"/>
+            <column name="amount" type="decimal(15,2)"/>
+            <column name="transaction_description" type="varchar(255)"/>
+            <column name="created_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create agreements table" author="NightBird78">
+        <preConditions onFail="CONTINUE" onFailMessage="Table agreements already exists">
+            <not>
+                <tableExists tableName="agreements"/>
+            </not>
+        </preConditions>
+        <createTable tableName="agreements">
+            <column name="id" type="binary(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="account_id" type="binary(16)">
+                <constraints foreignKeyName="account_id" references="accounts(id)"/>
+            </column>
+            <column name="product_id" type="binary(16)">
+                <constraints foreignKeyName="product_id" references="products(id)"/>
+            </column>
+            <column name="interest_rate" type="decimal(6,4)"/>
+            <column name="currency_code" type="varchar(3)"/>
+            <column name="agreement_status" type="varchar(30)"/>
+            <column name="discount_rate" type="numeric(4,2)"/>
+            <column name="agreement_limit" type="numeric(15,2)"/>
+            <column name="sum" type="numeric(15,2)"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
         </createTable>
     </changeSet>
 

@@ -11,4 +11,10 @@ public interface UserService {
 
     User create(UserDto userDto);
     boolean create(User user);
+
+    boolean existByPasswordAndEmail(String password, String email);
+
+    boolean existByEmail(String email);
+
+    boolean existById(Long id);
 }

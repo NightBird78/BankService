@@ -1,6 +1,7 @@
 package com.discordshopping.components;
 
 import com.discordshopping.bot.Bot;
+import com.discordshopping.service.AccountService;
 import com.discordshopping.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Component;
 public class JDAInitializer implements CommandLineRunner {
 
     private final UserService userService;
+    private final AccountService accountService;
 
     @Override
     public void run(String... args) throws Exception {
-        Bot.bot(userService);
+        Bot.bot(userService, accountService);
     }
 }

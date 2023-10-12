@@ -1,6 +1,6 @@
 package com.discordshopping.entity.enums;
 
-public enum Currency {
+public enum CurrencyCode {
     EUR,
     USD,
     CAD,
@@ -8,6 +8,5 @@ public enum Currency {
     PLN,
     CZK,
     RON,
-    HRK,
     TRY
 }

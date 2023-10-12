@@ -1,8 +1,21 @@
 package com.discordshopping.entity;
 
 import com.discordshopping.entity.enums.AccountStatus;
-import com.discordshopping.entity.enums.Currency;
-import jakarta.persistence.*;
+import com.discordshopping.entity.enums.CurrencyCode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +26,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REFRESH;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,7 +57,7 @@ public class UserAccount {
 
     @Column(name = "currency_code")
     @Enumerated(EnumType.STRING)
-    private Currency currency;
+    private CurrencyCode currencyCode;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -52,11 +67,9 @@ public class UserAccount {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
-//    @OneToMany(cascade = {MERGE, REFRESH, PERSIST})
     @OneToMany
     private Set<Transaction> transactions;
 
-//    @OneToMany(cascade = {MERGE, REFRESH, PERSIST})
     @OneToMany
     private Set<Agreement> agreements;
 
@@ -79,7 +92,7 @@ public class UserAccount {
                 ", user=" + user +
                 ", accountStatus=" + accountStatus +
                 ", balance=" + balance +
-                ", currency=" + currency +
+                ", currency=" + currencyCode +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", transactions=" + transactions +

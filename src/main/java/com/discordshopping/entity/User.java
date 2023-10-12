@@ -13,6 +13,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +26,7 @@ public class User {
 
     @Id
     @Column(name = "discord_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "tax_code")
     private String taxCode;

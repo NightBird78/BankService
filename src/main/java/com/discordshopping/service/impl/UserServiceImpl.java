@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,8 +20,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public Optional<User> getById(Long id) {
-        return userRepository.findById(id);
+    public Optional<User> getById(String id) {
+        return userRepository.findById(UUID.fromString(id));
     }
 
     @Override
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existById(Long id) {
+    public boolean existById(UUID id) {
         return userRepository.existsById(id);
     }
 }

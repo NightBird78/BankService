@@ -4,10 +4,11 @@ import com.discordshopping.entity.User;
 import com.discordshopping.entity.dto.UserDto;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserService {
 
-    Optional<User> getById(Long id);
+    Optional<User> getById(String id);
 
     User create(UserDto userDto);
     boolean create(User user);
@@ -16,5 +17,5 @@ public interface UserService {
 
     boolean existByEmail(String email);
 
-    boolean existById(Long id);
+    boolean existById(UUID id);
 }

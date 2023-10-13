@@ -13,7 +13,7 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             </not>
         </preConditions>
         <createTable tableName="users">
-            <column name="discord_id" type="bigint">
+            <column name="discord_id" type="binary(16)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="tax_code" type="varchar(20)">
@@ -31,6 +31,20 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
         </createTable>
     </changeSet>
 
+    <changeSet id="create currencies table" author="NightBird78">
+        <preConditions onFail="CONTINUE" onFailMessage="Table currencies already exists">
+            <not>
+                <tableExists tableName="currencies"/>
+            </not>
+        </preConditions>
+        <createTable tableName="currencies">
+            <column name="code_id" type="varchar(3)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="price" type="decimal(8, 4)"/>
+        </createTable>
+    </changeSet>
+
     <changeSet id="create accounts table" author="NightBird78">
         <preConditions onFail="CONTINUE" onFailMessage="Table accounts already exists">
             <not>
@@ -41,7 +55,7 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             <column name="id" type="binary(16)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="client_id" type="bigint">
+            <column name="client_id" type="binary(16)">
                 <constraints unique="true" foreignKeyName="client_id" references="users(discord_id)"/>
             </column>
             <column name="account_status" type="varchar(50)"/>

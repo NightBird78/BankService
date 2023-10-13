@@ -1,11 +1,16 @@
 package com.discordshopping.bot;
 
 import com.discordshopping.bot.util.Constant;
+import com.discordshopping.bot.util.Cookie;
+import com.discordshopping.util.JsonParser;
+import com.discordshopping.bot.util.MiniUtil;
+import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.enums.AccountStatus;
-import com.discordshopping.entity.enums.Currency;
+import com.discordshopping.entity.enums.CurrencyCode;
 import com.discordshopping.service.AccountService;
+import com.discordshopping.service.CurrencyService;
 import com.discordshopping.service.UserService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -22,8 +27,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,17 +42,19 @@ public class Bot extends ListenerAdapter {
 
     private final UserService userService;
     private final AccountService accountService;
-    private final Map<Long, String> cookie = new HashMap<>();
+    private final CurrencyService currencyService;
+    private final Map<Long, Cookie> cookie = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(Bot.class);
 
-    public Bot(UserService userService, AccountService accountService) {
+    public Bot(UserService userService, AccountService accountService, CurrencyService currencyService) {
         this.userService = userService;
         this.accountService = accountService;
+        this.currencyService = currencyService;
     }
 
-    public static void bot(UserService userService, AccountService accountService) throws InterruptedException {
+    public static void bot(UserService userService, AccountService accountService, CurrencyService currencyService) throws InterruptedException {
         JDA jda = JDABuilder.createLight(Constant.token)
-                .addEventListeners(new Bot(userService, accountService))
+                .addEventListeners(new Bot(userService, accountService, currencyService))
                 .build();
 
         jda.updateCommands().addCommands(
@@ -68,7 +80,27 @@ public class Bot extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        System.out.println("API is ready!");
+
+        logger.info("Loading currency from API...");
+        long millis = System.currentTimeMillis();
+
+        Map<String, Double> map = JsonParser.parseCurrencyToMap();
+
+        for (CurrencyCode cc : CurrencyCode.values()) {
+            Double price;
+            if (cc.toString().equals("PLN")) {
+                price = 1d;
+            } else {
+                price = map.get(cc.toString());
+            }
+            Currency currency = new Currency(cc, price);
+
+            currencyService.update(currency);
+        }
+
+        logger.info(String.format("Currency data loaded in %d milliseconds", System.currentTimeMillis() - millis));
+
+        logger.info("API is ready!");
     }
 
     @Override
@@ -83,7 +115,7 @@ public class Bot extends ListenerAdapter {
                         .queue();
             }
             case "register" -> {
-                long userId;
+                UUID userId;
                 String tax_code;
                 String userName;
                 String firstName;
@@ -93,7 +125,7 @@ public class Bot extends ListenerAdapter {
                 double earning;
                 String password;
                 try {
-                    userId = Long.parseLong(event.getUser().getId());
+                    userId = MiniUtil.encode(event.getUser().getId());
                     tax_code = Objects.requireNonNull(event.getOption("taxcode")).getAsString();
                     userName = event.getUser().getName();
                     firstName = Objects.requireNonNull(event.getOption("firstname")).getAsString();
@@ -101,7 +133,11 @@ public class Bot extends ListenerAdapter {
                     email = Objects.requireNonNull(event.getOption("email")).getAsString();
                     address = Objects.requireNonNull(event.getOption("address")).getAsString();
                     earning = Double.parseDouble(Objects.requireNonNull(event.getOption("earning")).getAsString());
-                    password = Objects.requireNonNull(event.getOption("password")).getAsString();
+                    password = MiniUtil.encode(
+                                    Objects.requireNonNull(event.getOption("password"))
+                                            .getAsString()
+                            )
+                            .toString();
                 } catch (NumberFormatException e) {
                     event.reply("Something is wrong, I think there was a mistake with the number.").queue();
                     return;
@@ -110,7 +146,7 @@ public class Bot extends ListenerAdapter {
                     return;
                 }
 
-                Pattern pattern = Pattern.compile("[a-zA-Z0-9_\\.]+@[a-z]+\\.[a-z]+");
+                Pattern pattern = Pattern.compile("[a-z0-9_\\.]+@[a-z]+\\.[a-z]+");
 
                 Matcher matcher = pattern.matcher(email);
                 if (matcher.find()) {
@@ -122,6 +158,8 @@ public class Bot extends ListenerAdapter {
                     event.reply("invalid email").queue();
                     return;
                 }
+
+
                 User user = new User(
                         userId,
                         tax_code,
@@ -130,7 +168,7 @@ public class Bot extends ListenerAdapter {
                         lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase(),
                         earning,
                         email,
-                        UUID.nameUUIDFromBytes(password.getBytes()).toString(),
+                        password,
                         address.toLowerCase(),
                         LocalDateTime.now(),
                         LocalDateTime.now());
@@ -153,12 +191,22 @@ public class Bot extends ListenerAdapter {
                 logger.info(userName + " was success registered");
 
                 event.reply("success to register").queue();
-                cookie.put(event.getUser().getIdLong(), "in");
+                cookie.put(event.getUser().getIdLong(), new Cookie("in"));
 
             }
             case "account" -> {
+                try {
+                    if (!cookie.get(event.getUser().getIdLong()).getLogin().equals("in")){
+                        event.reply("You don`t log in\nType **/login**").queue();
+                        return;
+                    }
+                } catch (Exception e) {
+                    event.reply("You don`t log in\nType **/login**").queue();
+                    return;
+                }
+
                 StringSelectMenu.Builder builder = StringSelectMenu.create("menu:id");
-                for (String cur : Arrays.stream(Currency.values()).map(Currency::toString).sorted().toList()) {
+                for (String cur : Arrays.stream(CurrencyCode.values()).map(CurrencyCode::toString).sorted().toList()) {
                     builder.addOption(cur, cur);
                 }
                 StringSelectMenu menu = builder.build();
@@ -179,26 +227,29 @@ public class Bot extends ListenerAdapter {
             }
             case "login" -> {
 
-
-                if (!userService.existById(event.getUser().getIdLong())) {
-                    event.reply("You don`t registered, type **/register**").queue();
-                    return;
+                try {
+                    if (!userService.existById(MiniUtil.encode(event.getUser().getId()))) {
+                        event.reply("You don`t registered\nType **/register**").queue();
+                        return;
+                    }
+                } catch (NoSuchAlgorithmException ignored) {
                 }
-
                 String email;
                 String password;
                 try {
                     email = Objects.requireNonNull(event.getOption("email")).getAsString();
-                    password = Objects.requireNonNull(event.getOption("password")).getAsString();
+                    password = MiniUtil.encode(
+                                    Objects.requireNonNull(event.getOption("password"))
+                                            .getAsString()
+                            )
+                            .toString();
                 } catch (Exception e) {
                     event.reply("some field empty").queue();
                     return;
                 }
-                password = UUID.nameUUIDFromBytes(password.getBytes()).toString();
-
 
                 try {
-                    if (cookie.get(event.getUser().getIdLong()).equals("in")) {
+                    if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
                         event.reply("You already logged in").queue();
                         return;
                     }
@@ -212,25 +263,22 @@ public class Bot extends ListenerAdapter {
 
                 if (userService.existByPasswordAndEmail(password, email)) {
                     event.reply("You success log in").queue();
-                    cookie.put(event.getUser().getIdLong(), "in");
+                    cookie.put(event.getUser().getIdLong(), new Cookie("in"));
                     logger.info(event.getUser().getName() + " logged in");
                     return;
                 }
-
                 event.reply("wrong email or password").queue();
             }
             case "logout" -> {
                 try {
-                    if (cookie.get(event.getUser().getIdLong()).equals("in")) {
+                    if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
                         cookie.remove(event.getUser().getIdLong());
                         logger.info(event.getUser().getName() + " logged out");
                         event.reply("You success logged out").queue();
                     }
                 } catch (NullPointerException ignored) {
                     event.reply("You don`t logged in").queue();
-
                 }
-
             }
         }
     }

@@ -13,7 +13,7 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             </not>
         </preConditions>
         <createTable tableName="users">
-            <column name="discord_id" type="binary(16)">
+            <column name="id" type="binary(16)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="tax_code" type="varchar(20)">
@@ -56,10 +56,13 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="client_id" type="binary(16)">
-                <constraints unique="true" foreignKeyName="client_id" references="users(discord_id)"/>
+                <constraints unique="true" foreignKeyName="client_id" references="users(id)"/>
+            </column>
+            <column name="IDBA" type="varchar(20)">
+                <constraints unique="true"/>
             </column>
             <column name="account_status" type="varchar(50)"/>
-            <column name="balance" type="decimal(15,2)"/>
+            <column name="balance" type="decimal(15,2)" defaultValue="0.00"/>
             <column name="currency_code" type="varchar(3)"/>
             <column name="created_at" type="timestamp"/>
             <column name="updated_at" type="timestamp"/>

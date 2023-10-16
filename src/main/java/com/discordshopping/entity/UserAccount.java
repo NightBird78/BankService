@@ -1,5 +1,6 @@
 package com.discordshopping.entity;
 
+import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.enums.AccountStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
 import jakarta.persistence.Column;
@@ -20,6 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -45,8 +48,11 @@ public class UserAccount {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {MERGE, PERSIST, REFRESH})
-    @JoinColumn(name = "client_id", referencedColumnName = "discord_id")
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
     private User user;
+
+    @Column(name = "IDBA")
+    private String idba = MiniUtil.createBankIdentifier();
 
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
@@ -61,10 +67,12 @@ public class UserAccount {
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @OneToMany

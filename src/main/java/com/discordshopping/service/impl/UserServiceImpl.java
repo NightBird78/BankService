@@ -57,4 +57,9 @@ public class UserServiceImpl implements UserService {
     public boolean existById(UUID id) {
         return userRepository.existsById(id);
     }
+
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
 }

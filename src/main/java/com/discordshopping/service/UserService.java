@@ -18,4 +18,6 @@ public interface UserService {
     boolean existByEmail(String email);
 
     boolean existById(UUID id);
+
+    void save(User user);
 }

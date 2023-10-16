@@ -1,16 +1,16 @@
 package com.discordshopping.controller;
 
+import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.dto.AccountDto;
+import com.discordshopping.entity.dto.AccountUpdatedDto;
+import com.discordshopping.exception.InvalidUUIDException;
+import com.discordshopping.exception.NotFoundException;
+import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.AccountMapper;
 import com.discordshopping.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -22,12 +22,35 @@ public class AccountController {
     private final AccountMapper accountMapper;
 
     @GetMapping("/get/{id}")
-    public AccountDto getAccount(@PathVariable("id") String id){
+    public AccountDto getAccount(@PathVariable("id") String id) {
+        if (!MiniUtil.isValidUUID(id)){
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
+
         Optional<UserAccount> opt = accountService.findById(id);
 
         if (opt.isPresent()){
             return accountMapper.accountToDto(opt.get());
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        throw new NotFoundException(ErrorMessage.DATA_NOT_FOUND);
+    }
+
+    @RequestMapping("/update/{id}")
+    public AccountDto update(@PathVariable("id") String id, @RequestBody AccountUpdatedDto accountUpdatedDto) {
+        if (!MiniUtil.isValidUUID(id)){
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
+
+        Optional<UserAccount> opt = accountService.findById(id);
+
+        if (opt.isEmpty()){
+            throw new NotFoundException(ErrorMessage.DATA_NOT_FOUND);
+        }
+
+        UserAccount account = accountMapper.merge(accountMapper.dtoToAccount(accountUpdatedDto), opt.get());
+
+        accountService.save(account);
+
+        return accountMapper.accountToDto(account);
     }
 }

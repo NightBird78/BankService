@@ -1,16 +1,18 @@
 package com.discordshopping.controller;
 
+import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.dto.UserDto;
+import com.discordshopping.entity.dto.UserUpdatedDto;
+import com.discordshopping.exception.InvalidUUIDException;
+import com.discordshopping.exception.NotFoundException;
+import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.UserMapper;
 import com.discordshopping.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -23,12 +25,38 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping("/get/{id}")
-    public UserDto getUser(@PathVariable("id") String id){
+    public ResponseEntity<UserDto> getUserResponse(@PathVariable("id") String id) {
+        if (!MiniUtil.isValidUUID(id)) {
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
         Optional<User> opt = userService.getById(id);
 
-        if (opt.isPresent()){
-            return userMapper.userToDto(opt.get());
+        if (opt.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.DATA_NOT_FOUND);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        UserDto userDto = userMapper.userToDto(opt.get());
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/update/{id}", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<UserUpdatedDto> update(
+            @PathVariable("id") String id,
+            @RequestBody UserUpdatedDto uuDto) {
+
+        if (!MiniUtil.isValidUUID(id)) {
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
+        Optional<User> opt = userService.getById(id);
+
+        if (opt.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.DATA_NOT_FOUND);
+        }
+
+        User user = userMapper.merge(userMapper.dtoToUser(uuDto), opt.get());
+
+        userService.save(user);
+
+        return new ResponseEntity<>(userMapper.fullDto(user), HttpStatus.OK);
+    }
+
 }

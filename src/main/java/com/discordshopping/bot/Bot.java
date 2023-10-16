@@ -2,6 +2,7 @@ package com.discordshopping.bot;
 
 import com.discordshopping.bot.util.Constant;
 import com.discordshopping.bot.util.Cookie;
+import com.discordshopping.mapper.AccountMapper;
 import com.discordshopping.util.JsonParser;
 import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.Currency;
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -27,13 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,35 +39,50 @@ public class Bot extends ListenerAdapter {
     private final UserService userService;
     private final AccountService accountService;
     private final CurrencyService currencyService;
+    private final AccountMapper accountMapper;
     private final Map<Long, Cookie> cookie = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(Bot.class);
 
-    public Bot(UserService userService, AccountService accountService, CurrencyService currencyService) {
+    public Bot(
+            UserService userService,
+            AccountService accountService,
+            CurrencyService currencyService,
+            AccountMapper accountMapper) {
         this.userService = userService;
         this.accountService = accountService;
         this.currencyService = currencyService;
+        this.accountMapper = accountMapper;
     }
 
-    public static void bot(UserService userService, AccountService accountService, CurrencyService currencyService) throws InterruptedException {
+    public static void bot(
+            UserService userService,
+            AccountService accountService,
+            CurrencyService currencyService,
+            AccountMapper accountMapper) throws InterruptedException {
         JDA jda = JDABuilder.createLight(Constant.token)
-                .addEventListeners(new Bot(userService, accountService, currencyService))
+                .addEventListeners(new Bot(userService, accountService, currencyService, accountMapper))
                 .build();
 
         jda.updateCommands().addCommands(
                         Commands.slash("ping", "Calculate ping of the bot"),
-                        Commands.slash("register", "register to database")
-                                .addOption(OptionType.STRING, "firstname", "yours first name for database")
-                                .addOption(OptionType.STRING, "lastname", "yours last name for database")
-                                .addOption(OptionType.STRING, "email", "yours email, oyu can use non discord email")
-                                .addOption(OptionType.STRING, "password", "don`t forget password")
-                                .addOption(OptionType.STRING, "earning", "salary per year")
-                                .addOption(OptionType.STRING, "address", "yours live address")
-                                .addOption(OptionType.STRING, "taxcode", "yours tax code"),
-                        Commands.slash("account", "create or manage your payment account"),
-                        Commands.slash("login", "log in bank account")
-                                .addOption(OptionType.STRING, "email", "email")
-                                .addOption(OptionType.STRING, "password", "password"),
-                        Commands.slash("logout", "log out from account")
+                        Commands.slash("register", "Register to miniBank system")
+                                .addOption(OptionType.STRING, "firstname", "Yours first name")
+                                .addOption(OptionType.STRING, "lastname", "Yours last name")
+                                .addOption(OptionType.STRING, "email", "Yours e-mail, You can use non discord e-mail")
+                                .addOption(OptionType.STRING, "password", "Don`t forget password!")
+                                .addOption(OptionType.STRING, "earning", "Salary per year")
+                                .addOption(OptionType.STRING, "address", "Yours living address")
+                                .addOption(OptionType.STRING, "taxcode", "Yours tax code"),
+                        Commands.slash("currency", "Change currency"),
+                        Commands.slash("login", "Log-in bank account")
+                                .addOption(OptionType.STRING, "email", "e-mail")
+                                .addOption(OptionType.STRING, "password", "Did you remember?"),
+                        Commands.slash("logout", "Log-out from account"),
+                        Commands.slash("transfer", "Transfer money from you to someone")
+                                .addOption(OptionType.STRING, "currency", "Currency of transfer amount")
+                                .addOption(OptionType.STRING, "amount", "a lot of money")
+                                .addOption(OptionType.STRING, "idba", "Who will get money by IDBA"),
+                        Commands.slash("account", "Check yours account")
                 )
                 .queue();
 
@@ -81,7 +92,7 @@ public class Bot extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
 
-        logger.info("Loading currency from API...");
+        logger.info("Loading currency from bank API...");
         long millis = System.currentTimeMillis();
 
         Map<String, Double> map = JsonParser.parseCurrencyToMap();
@@ -92,6 +103,10 @@ public class Bot extends ListenerAdapter {
                 price = 1d;
             } else {
                 price = map.get(cc.toString());
+                if (price == null) {
+                    logger.warn(String.format("\"%s\" not found", cc));
+                    continue;
+                }
             }
             Currency currency = new Currency(cc, price);
 
@@ -101,6 +116,34 @@ public class Bot extends ListenerAdapter {
         logger.info(String.format("Currency data loaded in %d milliseconds", System.currentTimeMillis() - millis));
 
         logger.info("API is ready!");
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        if (event.getComponentId().equals("menu:currency")) {
+            if (cookie.containsKey(event.getUser().getIdLong())) {
+                if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
+                    event.getMessage().delete().queue();
+
+                    Optional<UserAccount> opt = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+
+                    if (opt.isEmpty()) {
+                        event.reply("something wrong").queue();
+                        return;
+                    }
+
+                    UserAccount account = opt.get();
+
+                    account.setCurrencyCode(CurrencyCode.valueOf(event.getValues().get(0)));
+
+                    accountService.save(account);
+
+                    event.reply("success").queue();
+                    return;
+                }
+            }
+            event.reply("You don`t log in\nType **/login**").queue();
+        }
     }
 
     @Override
@@ -159,27 +202,23 @@ public class Bot extends ListenerAdapter {
                     return;
                 }
 
+                User user = new User();
 
-                User user = new User(
-                        userId,
-                        tax_code,
-                        userName,
-                        firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase(),
-                        lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase(),
-                        earning,
-                        email,
-                        password,
-                        address.toLowerCase(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now());
+                user.setId(userId);
+                user.setTaxCode(tax_code);
+                user.setNickName(userName);
+                user.setFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase());
+                user.setLastName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase());
+                user.setEarning(earning);
+                user.setEmail(email);
+                user.setPassword(password);
+                user.setAddress(address.toLowerCase());
 
                 UserAccount userAccount = new UserAccount();
 
                 userAccount.setId(UUID.randomUUID());
-                userAccount.setBalance(0d);
                 userAccount.setUser(user);
-                userAccount.setCreatedAt(LocalDateTime.now());
-                userAccount.setUpdatedAt(LocalDateTime.now());
+                userAccount.setBalance(0d);
                 userAccount.setAccountStatus(AccountStatus.Active);
 
                 if (!userService.create(user)) {
@@ -191,12 +230,12 @@ public class Bot extends ListenerAdapter {
                 logger.info(userName + " was success registered");
 
                 event.reply("success to register").queue();
-                cookie.put(event.getUser().getIdLong(), new Cookie("in"));
+                cookie.put(event.getUser().getIdLong(), new Cookie("in", user.getEmail()));
 
             }
-            case "account" -> {
+            case "currency" -> {
                 try {
-                    if (!cookie.get(event.getUser().getIdLong()).getLogin().equals("in")){
+                    if (!cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
                         event.reply("You don`t log in\nType **/login**").queue();
                         return;
                     }
@@ -205,7 +244,7 @@ public class Bot extends ListenerAdapter {
                     return;
                 }
 
-                StringSelectMenu.Builder builder = StringSelectMenu.create("menu:id");
+                StringSelectMenu.Builder builder = StringSelectMenu.create("menu:currency");
                 for (String cur : Arrays.stream(CurrencyCode.values()).map(CurrencyCode::toString).sorted().toList()) {
                     builder.addOption(cur, cur);
                 }
@@ -213,27 +252,12 @@ public class Bot extends ListenerAdapter {
 
                 EmbedBuilder eb = new EmbedBuilder();
 
-                eb.setTitle("account manager");
+                eb.setTitle("Currency manager");
                 eb.setColor(Color.ORANGE);
-                eb.setDescription("choose all of this");
-
-                EmbedBuilder eb2 = new EmbedBuilder();
-
-                eb2.setTitle("account manager");
-                eb2.setColor(Color.CYAN);
-                eb2.setDescription("choose your currency");
-
-                event.replyEmbeds(eb.build()).addEmbeds(eb2.build()).addActionRow(menu).queue();
+                eb.setDescription("One all of this\nChoose your currency:");
+                event.replyEmbeds(eb.build()).addActionRow(menu).queue();
             }
             case "login" -> {
-
-                try {
-                    if (!userService.existById(MiniUtil.encode(event.getUser().getId()))) {
-                        event.reply("You don`t registered\nType **/register**").queue();
-                        return;
-                    }
-                } catch (NoSuchAlgorithmException ignored) {
-                }
                 String email;
                 String password;
                 try {
@@ -263,7 +287,7 @@ public class Bot extends ListenerAdapter {
 
                 if (userService.existByPasswordAndEmail(password, email)) {
                     event.reply("You success log in").queue();
-                    cookie.put(event.getUser().getIdLong(), new Cookie("in"));
+                    cookie.put(event.getUser().getIdLong(), new Cookie("in", email));
                     logger.info(event.getUser().getName() + " logged in");
                     return;
                 }
@@ -279,6 +303,86 @@ public class Bot extends ListenerAdapter {
                 } catch (NullPointerException ignored) {
                     event.reply("You don`t logged in").queue();
                 }
+            }
+            case "transfer" -> {
+
+                if (cookie.containsKey(event.getUser().getIdLong())) {
+                    if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
+
+                        double amount;
+                        String idba;
+                        String currency;
+
+                        try {
+                            amount = Objects.requireNonNull(event.getOption("amount")).getAsDouble();
+                            idba = Objects.requireNonNull(event.getOption("idba")).getAsString();
+                            currency = Objects.requireNonNull(event.getOption("currency")).getAsString();
+                        } catch (Exception e) {
+                            event.reply("Some field is empty").queue();
+                            return;
+                        }
+
+                        Optional<UserAccount> optFrom = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                        Optional<UserAccount> optTo = accountService.findByIDBA(idba);
+
+                        if (optFrom.isEmpty()) {
+                            event.reply("some error").queue();
+                            return;
+                        }
+                        if (optTo.isEmpty()) {
+                            event.reply("invalid IDBA").queue();
+                            return;
+                        }
+
+                        UserAccount accountFrom = optFrom.get();
+                        UserAccount accountTo = optTo.get();
+
+                        if (accountFrom.getIdba().equals(accountTo.getIdba())){
+                            event.reply("U can`t send money for yourself").queue();
+                            return;
+                        }
+
+                        if (!accountService.transfer(accountFrom, accountTo, currency, amount)){
+                            event.reply("Not enough money").queue();
+                            return;
+                        }
+
+                        event.reply("Check accounts").queue();
+                    }
+                }
+                event.reply("You don`t log in\nType **/login**").queue();
+            }
+            case "account" -> {
+                if (cookie.containsKey(event.getUser().getIdLong())) {
+                    if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
+
+                        Optional<UserAccount> opt = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+
+                        if (opt.isEmpty()) {
+                            event.reply("something wrong").queue();
+                            return;
+                        }
+
+                        UserAccount account = opt.get();
+
+                        EmbedBuilder eb = new EmbedBuilder();
+
+                        eb.setTitle("Account manager");
+                        eb.setColor(Color.GREEN);
+                        eb.setDescription("information about your account");
+                        eb.addField("IDBA", account.getIdba(), false);
+                        eb.addField("Currency", account.getCurrencyCode() == null ? "/currency" : account.getCurrencyCode().toString(), false);
+                        eb.addField("Balance", account.getBalance().toString(), false);
+                        eb.addField("Status", account.getAccountStatus().toString(), false);
+
+                        eb.setFooter(account.getCreatedAt().toString());
+
+                        event.replyEmbeds(eb.build()).queue();
+
+                        return;
+                    }
+                }
+                event.reply("You don`t log in\nType **/login**").queue();
             }
         }
     }

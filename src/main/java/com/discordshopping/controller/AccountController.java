@@ -35,7 +35,7 @@ public class AccountController {
         throw new NotFoundException(ErrorMessage.DATA_NOT_FOUND);
     }
 
-    @RequestMapping("/update/{id}")
+    @RequestMapping(value = "/update/{id}", method = {RequestMethod.GET, RequestMethod.POST})
     public AccountDto update(@PathVariable("id") String id, @RequestBody AccountUpdatedDto accountUpdatedDto) {
         if (!MiniUtil.isValidUUID(id)){
             throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);

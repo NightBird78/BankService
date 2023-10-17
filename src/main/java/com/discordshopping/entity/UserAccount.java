@@ -1,6 +1,5 @@
 package com.discordshopping.entity;
 
-import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.enums.AccountStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
 import jakarta.persistence.Column;
@@ -47,12 +46,13 @@ public class UserAccount {
     @Column(name = "id")
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {MERGE, PERSIST, REFRESH})
+    @OneToOne(fetch = FetchType.EAGER, cascade = {MERGE, PERSIST, REFRESH})
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private User user;
 
     @Column(name = "IDBA")
-    private String idba = MiniUtil.createBankIdentifier();
+    @GeneratedValue(generator = "java(MiniUtil.createBankIdentifier())")
+    private String idba;
 
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)

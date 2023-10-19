@@ -2,15 +2,16 @@ package com.discordshopping.service;
 
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.dto.UserDto;
+import com.discordshopping.entity.dto.UserUpdatedDto;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService {
 
-    Optional<User> getById(String id);
+    User findById(String id);
 
     User create(UserDto userDto);
+
     boolean create(User user);
 
     boolean existByPasswordAndEmail(String password, String email);
@@ -20,4 +21,8 @@ public interface UserService {
     boolean existById(UUID id);
 
     void save(User user);
+
+    UserDto findDtoById(String id);
+
+    UserUpdatedDto merge(UserUpdatedDto uuDto, String id);
 }

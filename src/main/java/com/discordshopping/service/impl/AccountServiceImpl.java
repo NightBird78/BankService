@@ -1,9 +1,17 @@
 package com.discordshopping.service.impl;
 
+import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.dto.AccountDto;
+import com.discordshopping.entity.dto.AccountUpdatedDto;
 import com.discordshopping.entity.enums.CurrencyCode;
+import com.discordshopping.exception.InvalidEmailException;
+import com.discordshopping.exception.InvalidIDBAException;
+import com.discordshopping.exception.InvalidUUIDException;
+import com.discordshopping.exception.NotFoundException;
+import com.discordshopping.exception.enums.ErrorMessage;
+import com.discordshopping.mapper.AccountMapper;
 import com.discordshopping.service.AccountService;
 import com.discordshopping.service.repository.AccountRepository;
 import com.discordshopping.service.repository.CurrencyRepository;
@@ -20,20 +28,38 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final CurrencyRepository currencyRepository;
+    private final AccountMapper accountMapper;
 
     @Override
-    public Optional<UserAccount> findById(String id) {
-        return accountRepository.findById(UUID.fromString(id));
+    public UserAccount findById(String id) {
+
+        if (!MiniUtil.isValidUUID(id)) {
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
+
+        return accountRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }
 
     @Override
-    public Optional<UserAccount> findByIDBA(String idba) {
-        return accountRepository.findByIDBA(idba);
+    public UserAccount findByIDBA(String idba) {
+
+        if (!MiniUtil.isValidIDBA(idba)) {
+            throw new InvalidIDBAException(ErrorMessage.INVALID_IDBA);
+        }
+
+        return accountRepository.findByIDBA(idba)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
+
     }
 
     @Override
-    public Optional<UserAccount> findByUserId(String id) {
-        return accountRepository.findByUserId(UUID.fromString(id));
+    public UserAccount findByUserId(String id) {
+        if (!MiniUtil.isValidUUID(id)) {
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
+        return accountRepository.findByUserId(UUID.fromString(id))
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }
 
     @Override
@@ -57,8 +83,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<UserAccount> findByEmail(String email) {
-        return accountRepository.findByEmail(email);
+    public UserAccount findByEmail(String email) {
+
+        if (!MiniUtil.isValidEmail(email)) {
+            throw new InvalidEmailException(ErrorMessage.INVALID_EMAIL_FORMAT);
+        }
+
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }
 
     @Override
@@ -81,10 +113,10 @@ public class AccountServiceImpl implements AccountService {
         Double toK = optCt.get().price;
         Double ofK = ofC.get().price;
 
-        Double amountT = amount * (ofK/toK);
-        Double amountF = amount * (ofK/fromK);
+        Double amountT = amount * (ofK / toK);
+        Double amountF = amount * (ofK / fromK);
 
-        if (from.getBalance() < amountF){
+        if (from.getBalance() < amountF) {
             return false;
         }
 
@@ -97,5 +129,19 @@ public class AccountServiceImpl implements AccountService {
         return true;
     }
 
+    @Override
+    public AccountDto findDtoById(String id) {
+        return accountMapper.accountToDto(findById(id));
+    }
 
+    @Override
+    public AccountDto merge(AccountUpdatedDto dto, String id) {
+
+        UserAccount account = accountMapper.merge(
+                accountMapper.dtoToAccount(dto), findById(id));
+
+        save(account);
+
+        return accountMapper.accountToDto(account);
+    }
 }

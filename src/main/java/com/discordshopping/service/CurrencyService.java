@@ -3,21 +3,17 @@ package com.discordshopping.service;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.enums.CurrencyCode;
 
-import java.util.Optional;
-
 public interface CurrencyService {
 
     /**
-     * @param name
-     * its name of CurrencyCode<br>
-     * same as id
+     * @param name its name of CurrencyCode<br>
+     *             same as id
      */
-    Optional<Currency> findByName(CurrencyCode name);
+    Currency findByName(String name);
 
     /**
-     * @param name
-     * its name of CurrencyCode<br>
-     * same as id
+     * @param name its name of CurrencyCode<br>
+     *             same as id
      */
     boolean existByName(CurrencyCode name);
 

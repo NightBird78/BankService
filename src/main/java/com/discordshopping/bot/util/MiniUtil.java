@@ -35,4 +35,24 @@ public class MiniUtil {
 
         return primaryCode+number;
     }
+
+    public static boolean isValidIDBA(String idba){
+        Pattern pattern = Pattern.compile("idba[0-9]{16}");
+        Matcher matcher = pattern.matcher(idba);
+
+        if(matcher.find()) {
+            return matcher.group().equals(idba);
+        }
+        return false;
+    }
+
+    public static boolean isValidEmail(String email){
+        Pattern pattern = Pattern.compile("[a-z0-9_\\.]+@[a-z]+\\.[a-z]+");
+
+        Matcher matcher = pattern.matcher(email);
+        if (matcher.find()) {
+            return email.equals(matcher.group());
+        }
+        return false;
+    }
 }

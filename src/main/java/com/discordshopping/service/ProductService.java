@@ -1,9 +1,10 @@
 package com.discordshopping.service;
 
 import com.discordshopping.entity.Product;
-
-import java.util.Optional;
+import com.discordshopping.entity.dto.ProductDto;
 
 public interface ProductService {
-    Optional<Product> findById(String id);
+    Product findById(String id);
+
+    ProductDto findDtoById(String id);
 }

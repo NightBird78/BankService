@@ -2,17 +2,19 @@ package com.discordshopping.bot;
 
 import com.discordshopping.bot.util.Constant;
 import com.discordshopping.bot.util.Cookie;
-import com.discordshopping.mapper.AccountMapper;
-import com.discordshopping.util.JsonParser;
 import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.enums.AccountStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
+import com.discordshopping.exception.InvalidEmailException;
+import com.discordshopping.exception.InvalidIDBAException;
+import com.discordshopping.mapper.AccountMapper;
 import com.discordshopping.service.AccountService;
 import com.discordshopping.service.CurrencyService;
 import com.discordshopping.service.UserService;
+import com.discordshopping.util.JsonParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -30,8 +32,6 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class Bot extends ListenerAdapter {
@@ -125,14 +125,14 @@ public class Bot extends ListenerAdapter {
                 if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
                     event.getMessage().delete().queue();
 
-                    Optional<UserAccount> opt = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                    UserAccount account;
 
-                    if (opt.isEmpty()) {
+                    try {
+                        account = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                    } catch (InvalidEmailException e) {
                         event.reply("something wrong").queue();
                         return;
                     }
-
-                    UserAccount account = opt.get();
 
                     account.setCurrencyCode(CurrencyCode.valueOf(event.getValues().get(0)));
 
@@ -189,15 +189,7 @@ public class Bot extends ListenerAdapter {
                     return;
                 }
 
-                Pattern pattern = Pattern.compile("[a-z0-9_\\.]+@[a-z]+\\.[a-z]+");
-
-                Matcher matcher = pattern.matcher(email);
-                if (matcher.find()) {
-                    if (!email.equals(matcher.group())) {
-                        event.reply("invalid email").queue();
-                        return;
-                    }
-                } else {
+                if (!MiniUtil.isValidEmail(email)) {
                     event.reply("invalid email").queue();
                     return;
                 }
@@ -321,28 +313,26 @@ public class Bot extends ListenerAdapter {
                             event.reply("Some field is empty").queue();
                             return;
                         }
+                        UserAccount accountFrom;
+                        UserAccount accountTo;
 
-                        Optional<UserAccount> optFrom = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
-                        Optional<UserAccount> optTo = accountService.findByIDBA(idba);
-
-                        if (optFrom.isEmpty()) {
+                        try {
+                            accountFrom = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                            accountTo = accountService.findByIDBA(idba);
+                        } catch (InvalidEmailException e) {
                             event.reply("some error").queue();
                             return;
-                        }
-                        if (optTo.isEmpty()) {
+                        } catch (InvalidIDBAException e) {
                             event.reply("invalid IDBA").queue();
                             return;
                         }
 
-                        UserAccount accountFrom = optFrom.get();
-                        UserAccount accountTo = optTo.get();
-
-                        if (accountFrom.getIdba().equals(accountTo.getIdba())){
+                        if (accountFrom.getIdba().equals(accountTo.getIdba())) {
                             event.reply("U can`t send money for yourself").queue();
                             return;
                         }
 
-                        if (!accountService.transfer(accountFrom, accountTo, currency, amount)){
+                        if (!accountService.transfer(accountFrom, accountTo, currency, amount)) {
                             event.reply("Not enough money").queue();
                             return;
                         }
@@ -355,15 +345,14 @@ public class Bot extends ListenerAdapter {
             case "account" -> {
                 if (cookie.containsKey(event.getUser().getIdLong())) {
                     if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
+                        UserAccount account;
 
-                        Optional<UserAccount> opt = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
-
-                        if (opt.isEmpty()) {
+                        try {
+                            account = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                        } catch (InvalidEmailException e) {
                             event.reply("something wrong").queue();
                             return;
                         }
-
-                        UserAccount account = opt.get();
 
                         EmbedBuilder eb = new EmbedBuilder();
 

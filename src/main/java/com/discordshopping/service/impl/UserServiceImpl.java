@@ -1,7 +1,12 @@
 package com.discordshopping.service.impl;
 
+import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.dto.UserDto;
+import com.discordshopping.entity.dto.UserUpdatedDto;
+import com.discordshopping.exception.InvalidUUIDException;
+import com.discordshopping.exception.NotFoundException;
+import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.UserMapper;
 import com.discordshopping.service.UserService;
 import com.discordshopping.service.repository.UserRepository;
@@ -9,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,8 +24,14 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public Optional<User> getById(String id) {
-        return userRepository.findById(UUID.fromString(id));
+    public User findById(String id) {
+
+        if (!MiniUtil.isValidUUID(id)) {
+            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
+        }
+
+        return userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }
 
     @Override
@@ -36,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean create(User user) {
-        if (userRepository.findById(user.getId()).isPresent()){
+        if (userRepository.findById(user.getId()).isPresent()) {
             return false;
         }
         userRepository.save(user);
@@ -61,5 +71,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public UserDto findDtoById(String id) {
+        return userMapper.userToDto(findById(id));
+    }
+
+    @Override
+    public UserUpdatedDto merge(UserUpdatedDto uuDto, String id) {
+
+        User user = userMapper.merge(userMapper.dtoToUser(uuDto), findById(id));
+
+        userRepository.save(user);
+
+        return userMapper.fullDto(user);
     }
 }

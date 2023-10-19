@@ -2,16 +2,15 @@ package com.discordshopping.service;
 
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.dto.AccountDto;
-
-import java.util.Optional;
+import com.discordshopping.entity.dto.AccountUpdatedDto;
 
 public interface AccountService {
 
-    Optional<UserAccount> findById(String id);
+    UserAccount findById(String id);
 
-    Optional<UserAccount> findByIDBA(String idba);
+    UserAccount findByIDBA(String idba);
 
-    Optional<UserAccount> findByUserId(String id);
+    UserAccount findByUserId(String id);
 
     boolean create(UserAccount account);
 
@@ -19,7 +18,11 @@ public interface AccountService {
 
     void save(UserAccount account);
 
-    Optional<UserAccount> findByEmail(String email);
+    UserAccount findByEmail(String email);
 
     boolean transfer(UserAccount from, UserAccount to, String currency, Double amount);
+
+    AccountDto findDtoById(String id);
+
+    AccountDto merge(AccountUpdatedDto dto, String id);
 }

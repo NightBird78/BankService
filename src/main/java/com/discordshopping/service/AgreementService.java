@@ -1,9 +1,10 @@
 package com.discordshopping.service;
 
 import com.discordshopping.entity.Agreement;
-
-import java.util.Optional;
+import com.discordshopping.entity.dto.AgreementDto;
 
 public interface AgreementService {
-    Optional<Agreement> findById(String id);
+    Agreement findById(String id);
+
+    AgreementDto findDtoById(String id);
 }

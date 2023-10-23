@@ -15,6 +15,7 @@ import com.discordshopping.service.AccountService;
 import com.discordshopping.service.CurrencyService;
 import com.discordshopping.service.UserService;
 import com.discordshopping.util.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -30,8 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class Bot extends ListenerAdapter {
@@ -95,16 +100,22 @@ public class Bot extends ListenerAdapter {
         logger.info("Loading currency from bank API...");
         long millis = System.currentTimeMillis();
 
-        Map<String, Double> map = JsonParser.parseCurrencyToMap();
+        Map<CurrencyCode, Double> map;
+
+        try {
+            map = JsonParser.parseCurrency();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         for (CurrencyCode cc : CurrencyCode.values()) {
             Double price;
             if (cc.toString().equals("PLN")) {
                 price = 1d;
             } else {
-                price = map.get(cc.toString());
+                price = map.get(cc);
                 if (price == null) {
-                    logger.warn(String.format("\"%s\" not found", cc));
+                    LoggerFactory.getLogger(JsonParser.class).warn(String.format("\"%s\" not found", cc));
                     continue;
                 }
             }
@@ -112,9 +123,7 @@ public class Bot extends ListenerAdapter {
 
             currencyService.update(currency);
         }
-
         logger.info(String.format("Currency data loaded in %d milliseconds", System.currentTimeMillis() - millis));
-
         logger.info("API is ready!");
     }
 

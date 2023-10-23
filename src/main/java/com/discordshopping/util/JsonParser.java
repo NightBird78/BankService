@@ -1,17 +1,24 @@
 package com.discordshopping.util;
 
 import com.discordshopping.bot.util.Constant;
+import com.discordshopping.entity.Currency;
+import com.discordshopping.entity.CurrencyParsed;
+import com.discordshopping.entity.enums.CurrencyCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.sql.exec.ExecutionException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class JsonParser {
 
@@ -31,71 +38,49 @@ public class JsonParser {
         return String.join(",\n", jsonstring.split(","));
     }
 
-    public static List<String> miniParse(String s) {
+    public static Map<CurrencyCode, Double> parseCurrency() throws JsonProcessingException {
+        List<CurrencyParsed> currencies = new ArrayList<>();
 
-        List<List<Integer>> listList = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> dataMap = objectMapper
+                .readValue(JsonParser.getAllCurrency(), new TypeReference<>() {
+                });
 
-        List<Integer> integerList = new ArrayList<>();
-
-        int count = 0;
-
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '{') {
-                count++;
-                if (count == 1) {
-                    integerList.add(i);
+        for (Map<String, Object> map : dataMap) {
+            String[] strings = map.get("effectiveDate").toString().split("-");
+            LocalDateTime localDateTime = LocalDateTime.of(
+                    Integer.parseInt(strings[0]),
+                    Integer.parseInt(strings[1]),
+                    Integer.parseInt(strings[2]),
+                    0,
+                    0);
+            List<Map<String, Object>> currencyList = objectMapper
+                    .readValue(map.get("rates").toString()
+                                    .replace("{", "{\"")
+                                    .replace("=", "\":\"")
+                                    .replace(",", "\",")
+                                    .replace("}", "\"}")
+                                    .replace(", ", ", \"")
+                                    .replace("\"}\", \"", "\"}, "),
+                            new TypeReference<>() {
+                            });
+            for (Map<String, Object> currencyMap : currencyList) {
+                CurrencyCode c;
+                try {
+                    c = CurrencyCode.valueOf(currencyMap.get("code").toString());
+                } catch (Exception ignore) {
+                    continue;
                 }
-            } else if (s.charAt(i) == '}') {
-                count--;
-
-                if (count == 0) {
-                    integerList.add(i);
-                    listList.add(List.copyOf(integerList));
-                    integerList.clear();
-                }
-                if (count < 0) {
-                    throw new ExecutionException("invalid json format");
-                }
+                currencies.add(new CurrencyParsed(
+                        localDateTime,
+                        c,
+                        Double.parseDouble(currencyMap.get("mid").toString())));
             }
         }
-
-        if (count > 0) {
-            throw new ExecutionException("invalid json format");
-        }
-
-        List<String> strings = new ArrayList<>();
-        listList.forEach(l -> {
-            int x1 = l.get(0);
-            int x2 = l.get(1);
-
-            strings.add(s.substring(x1, x2 + 1));
-        });
-        return strings;
-    }
-
-    public static Map<String, Double> parseCurrencyToMap() {
-        String jsonCaver = JsonParser.getAllCurrency();
-
-        List<String> currencyGroup = new ArrayList<>();
-
-        JsonParser.miniParse(jsonCaver).forEach(l ->
-                JsonParser.miniParse(l.substring(1, l.length() - 1))
-                        .forEach(l1 -> currencyGroup.add(l1.substring(1, l1.length() - 1))));
-        Map<String, Double> map = new HashMap<>();
-
-        for (int i = currencyGroup.size() - 1; i > 0; i--) {
-
-            String s = currencyGroup.get(i);
-
-            String[] array = s.replace("\"", "").split(",");
-
-            String code = array[1].split(":")[1];
-            Double price = Double.parseDouble(array[2].split(":")[1]);
-
-            if (!map.containsKey(code)) {
-                map.put(code, price);
-            }
-        }
-        return map;
+        return currencies.stream()
+                .sorted(Comparator.reverseOrder())
+                .distinct()
+                .map(CurrencyParsed::getCurrency)
+                .collect(Collectors.toMap(Currency::getCurrencyCode, Currency::getPrice));
     }
 }

@@ -2,16 +2,7 @@ package com.discordshopping.entity;
 
 import com.discordshopping.entity.enums.ProductStatus;
 import com.discordshopping.entity.enums.ProductType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +21,7 @@ import java.util.UUID;
 @Setter
 
 @Entity
-@Table(name = "products", schema = "discord_db")
+@Table(name = "products")
 public class Product {
 
     @Id
@@ -57,7 +48,6 @@ public class Product {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @JsonIgnore
     @OneToMany
     private Set<Agreement> agreements;
 

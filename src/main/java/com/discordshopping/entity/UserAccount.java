@@ -38,7 +38,7 @@ import static jakarta.persistence.CascadeType.REFRESH;
 @Setter
 
 @Entity
-@Table(name = "accounts", schema = "discord_db")
+@Table(name = "accounts")
 public class UserAccount {
 
     @Id

@@ -1,6 +1,5 @@
 package com.discordshopping.entity;
 
-
 import com.discordshopping.entity.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,7 @@ import static jakarta.persistence.CascadeType.*;
 @Setter
 
 @Entity
-@Table(name = "transactions", schema = "discord_db")
+@Table(name = "transactions")
 public class Transaction {
 
     @Id

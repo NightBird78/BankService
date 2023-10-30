@@ -2,19 +2,7 @@ package com.discordshopping.entity;
 
 import com.discordshopping.entity.enums.AgreementStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.CascadeType.REFRESH;
+import static jakarta.persistence.CascadeType.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,7 +22,7 @@ import static jakarta.persistence.CascadeType.REFRESH;
 @Setter
 
 @Entity
-@Table(name = "agreements", schema = "discord_db")
+@Table(name = "agreements")
 public class Agreement {
 
     @Id
@@ -44,12 +30,10 @@ public class Agreement {
     @Column(name = "id")
     private UUID id;
 
-    @JsonIgnore
     @ManyToOne(cascade = {MERGE, PERSIST, REFRESH})
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private UserAccount userAccount;
 
-    @JsonIgnore
     @ManyToOne(cascade = {MERGE, PERSIST, REFRESH})
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;

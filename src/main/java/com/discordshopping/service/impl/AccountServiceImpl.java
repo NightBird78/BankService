@@ -32,11 +32,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public UserAccount findById(String id) {
-
-        if (!MiniUtil.isValidUUID(id)) {
-            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
-        }
-
         return accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }

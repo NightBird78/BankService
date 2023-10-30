@@ -1,9 +1,7 @@
 package com.discordshopping.service.impl;
 
-import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.Agreement;
 import com.discordshopping.entity.dto.AgreementDto;
-import com.discordshopping.exception.InvalidUUIDException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.AgreementMapper;
@@ -23,11 +21,6 @@ public class AgreementServiceImpl implements AgreementService {
 
     @Override
     public Agreement findById(String id) {
-
-        if (!MiniUtil.isValidUUID(id)) {
-            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
-        }
-
         return agreementRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }

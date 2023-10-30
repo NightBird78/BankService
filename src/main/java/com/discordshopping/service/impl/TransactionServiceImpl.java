@@ -1,9 +1,7 @@
 package com.discordshopping.service.impl;
 
-import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.Transaction;
 import com.discordshopping.entity.dto.TransactionDto;
-import com.discordshopping.exception.InvalidUUIDException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.TransactionMapper;
@@ -23,11 +21,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction findById(String id) {
-
-        if (!MiniUtil.isValidUUID(id)) {
-            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
-        }
-
         return transactionRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }

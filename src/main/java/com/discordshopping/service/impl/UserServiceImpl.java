@@ -1,10 +1,8 @@
 package com.discordshopping.service.impl;
 
-import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.dto.UserDto;
 import com.discordshopping.entity.dto.UserUpdatedDto;
-import com.discordshopping.exception.InvalidUUIDException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.UserMapper;
@@ -25,11 +23,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(String id) {
-
-        if (!MiniUtil.isValidUUID(id)) {
-            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
-        }
-
         return userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }

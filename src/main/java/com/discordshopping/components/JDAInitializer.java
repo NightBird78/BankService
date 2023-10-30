@@ -6,6 +6,7 @@ import com.discordshopping.service.AccountService;
 import com.discordshopping.service.CurrencyService;
 import com.discordshopping.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,11 @@ public class JDAInitializer implements CommandLineRunner {
     private final AccountMapper accountMapper;
 
     @Override
-    public void run(String... args) throws Exception {
-        Bot.bot(userService, accountService, currencyService, accountMapper);
+    public void run(String... args) {
+        try {
+            Bot.bot(userService, accountService, currencyService, accountMapper);
+        } catch (Exception e){
+            LoggerFactory.getLogger(JDAInitializer.class).error("Cannot load Discord-API");
+        }
     }
 }

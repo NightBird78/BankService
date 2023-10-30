@@ -15,7 +15,6 @@ import com.discordshopping.service.AccountService;
 import com.discordshopping.service.CurrencyService;
 import com.discordshopping.service.UserService;
 import com.discordshopping.util.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -104,8 +103,10 @@ public class Bot extends ListenerAdapter {
 
         try {
             map = JsonParser.parseCurrency();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            logger.warn("cannot load currency from bank-API");
+            logger.info("Discord-API is ready!");
+            return;
         }
 
         for (CurrencyCode cc : CurrencyCode.values()) {
@@ -124,7 +125,7 @@ public class Bot extends ListenerAdapter {
             currencyService.update(currency);
         }
         logger.info(String.format("Currency data loaded in %d milliseconds", System.currentTimeMillis() - millis));
-        logger.info("API is ready!");
+        logger.info("Discord-API is ready!");
     }
 
     @Override

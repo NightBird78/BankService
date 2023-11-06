@@ -7,8 +7,6 @@ import com.discordshopping.entity.dto.AccountDto;
 import com.discordshopping.entity.dto.AccountUpdatedDto;
 import com.discordshopping.entity.enums.CurrencyCode;
 import com.discordshopping.exception.InvalidEmailException;
-import com.discordshopping.exception.InvalidIDBAException;
-import com.discordshopping.exception.InvalidUUIDException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.AccountMapper;
@@ -39,10 +37,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserAccount findByIDBA(String idba) {
 
-        if (!MiniUtil.isValidIDBA(idba)) {
-            throw new InvalidIDBAException(ErrorMessage.INVALID_IDBA);
-        }
-
         return accountRepository.findByIDBA(idba)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
 
@@ -50,9 +44,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public UserAccount findByUserId(String id) {
-        if (!MiniUtil.isValidUUID(id)) {
-            throw new InvalidUUIDException(ErrorMessage.INVALID_UUID_FORMAT);
-        }
         return accountRepository.findByUserId(UUID.fromString(id))
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }
@@ -65,11 +56,6 @@ public class AccountServiceImpl implements AccountService {
         }
         accountRepository.save(account);
         return true;
-    }
-
-    @Override
-    public boolean create(AccountDto accountDto) {
-        return false;
     }
 
     @Override
@@ -138,5 +124,10 @@ public class AccountServiceImpl implements AccountService {
         save(account);
 
         return accountMapper.accountToDto(account);
+    }
+
+    @Override
+    public AccountDto findDtoByUserId(String id) {
+        return accountMapper.accountToDto(findByUserId(id));
     }
 }

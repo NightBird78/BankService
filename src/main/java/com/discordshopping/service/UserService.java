@@ -1,6 +1,7 @@
 package com.discordshopping.service;
 
 import com.discordshopping.entity.User;
+import com.discordshopping.entity.dto.UserCreatedDto;
 import com.discordshopping.entity.dto.UserDto;
 import com.discordshopping.entity.dto.UserUpdatedDto;
 
@@ -24,5 +25,7 @@ public interface UserService {
 
     UserDto findDtoById(String id);
 
-    UserUpdatedDto merge(UserUpdatedDto uuDto, String id);
+    UserDto merge(UserUpdatedDto uuDto, String id);
+
+    UserDto create(UserCreatedDto dto);
 }

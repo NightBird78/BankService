@@ -1,6 +1,7 @@
 package com.discordshopping.mapper;
 
 import com.discordshopping.entity.User;
+import com.discordshopping.entity.dto.UserCreatedDto;
 import com.discordshopping.entity.dto.UserDto;
 import com.discordshopping.entity.dto.UserUpdatedDto;
 import org.mapstruct.Mapper;
@@ -19,4 +20,6 @@ public interface UserMapper {
     User merge(User from,@MappingTarget User to);
 
     UserUpdatedDto fullDto(User user);
+
+    User dtoToUser(UserCreatedDto dto);
 }

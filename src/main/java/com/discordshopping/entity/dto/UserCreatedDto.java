@@ -3,12 +3,13 @@ package com.discordshopping.entity.dto;
 import lombok.Data;
 
 @Data
-public class UserUpdatedDto {
+public class UserCreatedDto {
     String taxCode;
     String nickName;
     String firstName;
     String lastName;
-    Double earning;
+    String earning;
     String email;
+    String password;
     String address;
 }

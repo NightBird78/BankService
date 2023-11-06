@@ -1,8 +1,13 @@
 package com.discordshopping.service.impl;
 
+import com.discordshopping.bot.util.MiniUtil;
 import com.discordshopping.entity.User;
+import com.discordshopping.entity.UserAccount;
+import com.discordshopping.entity.dto.UserCreatedDto;
 import com.discordshopping.entity.dto.UserDto;
 import com.discordshopping.entity.dto.UserUpdatedDto;
+import com.discordshopping.entity.enums.AccountStatus;
+import com.discordshopping.exception.InternalTechnicalErrorException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.UserMapper;
@@ -12,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Service
@@ -72,12 +78,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdatedDto merge(UserUpdatedDto uuDto, String id) {
+    public UserDto merge(UserUpdatedDto uuDto, String id) {
 
         User user = userMapper.merge(userMapper.dtoToUser(uuDto), findById(id));
 
         userRepository.save(user);
 
-        return userMapper.fullDto(user);
+        return userMapper.userToDto(user);
+    }
+
+    @Override
+    public UserDto create(UserCreatedDto dto) {
+
+        try {
+            dto.setPassword(MiniUtil.encode(dto.getPassword()).toString());
+        } catch (NoSuchAlgorithmException e) {
+            throw new InternalTechnicalErrorException(ErrorMessage.TECHNICAL_ERROR);
+        }
+
+        User user = userMapper.dtoToUser(dto);
+        userRepository.save(user);
+
+        UserAccount uAccount = new UserAccount();
+        uAccount.setUser(user);
+        uAccount.setAccountStatus(AccountStatus.Active);
+
+        return userMapper.userToDto(user);
     }
 }

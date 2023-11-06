@@ -5,6 +5,8 @@ import com.discordshopping.entity.dto.TransactionDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
@@ -13,4 +15,6 @@ public interface TransactionMapper {
     @Mapping(source = "creditUserAccount.user.nickName", target = "to_user")
     @Mapping(source = "createdAt", target = "date")
     TransactionDto transactionToDto(Transaction transaction);
+
+    List<TransactionDto> transactionToDto(List<Transaction> transactions);
 }

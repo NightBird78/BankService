@@ -12,6 +12,7 @@ import com.discordshopping.service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,5 +36,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto findDtoById(String id) {
         return productMapper.productToDto(findById(id));
+    }
+
+    @Override
+    public List<ProductDto> findAll() {
+        return productMapper.productToDto(productRepository.findAll());
     }
 }

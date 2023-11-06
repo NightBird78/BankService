@@ -3,18 +3,14 @@ package com.discordshopping.bot;
 import com.discordshopping.bot.util.Constant;
 import com.discordshopping.bot.util.Cookie;
 import com.discordshopping.bot.util.MiniUtil;
-import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.enums.AccountStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
 import com.discordshopping.exception.InvalidEmailException;
 import com.discordshopping.exception.InvalidIDBAException;
-import com.discordshopping.mapper.AccountMapper;
 import com.discordshopping.service.AccountService;
-import com.discordshopping.service.CurrencyService;
 import com.discordshopping.service.UserService;
-import com.discordshopping.util.JsonParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -30,41 +26,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.awt.*;
+import java.util.*;
 
 @Service
 public class Bot extends ListenerAdapter {
 
+    String warn1 = "You don`t log in\nType **/login**";
+
     private final UserService userService;
     private final AccountService accountService;
-    private final CurrencyService currencyService;
-    private final AccountMapper accountMapper;
     private final Map<Long, Cookie> cookie = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(Bot.class);
 
     public Bot(
             UserService userService,
-            AccountService accountService,
-            CurrencyService currencyService,
-            AccountMapper accountMapper) {
+            AccountService accountService) {
         this.userService = userService;
         this.accountService = accountService;
-        this.currencyService = currencyService;
-        this.accountMapper = accountMapper;
     }
 
     public static void bot(
             UserService userService,
-            AccountService accountService,
-            CurrencyService currencyService,
-            AccountMapper accountMapper) throws InterruptedException {
+            AccountService accountService) throws InterruptedException {
         JDA jda = JDABuilder.createLight(Constant.token)
-                .addEventListeners(new Bot(userService, accountService, currencyService, accountMapper))
+                .addEventListeners(new Bot(userService, accountService))
                 .build();
 
         jda.updateCommands().addCommands(
@@ -95,70 +81,40 @@ public class Bot extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-
-        logger.info("Loading currency from bank API...");
-        long millis = System.currentTimeMillis();
-
-        Map<CurrencyCode, Double> map;
-
-        try {
-            map = JsonParser.parseCurrency();
-        } catch (Exception e) {
-            logger.warn("cannot load currency from bank-API");
-            logger.info("Discord-API is ready!");
-            return;
-        }
-
-        for (CurrencyCode cc : CurrencyCode.values()) {
-            Double price;
-            if (cc.toString().equals("PLN")) {
-                price = 1d;
-            } else {
-                price = map.get(cc);
-                if (price == null) {
-                    LoggerFactory.getLogger(JsonParser.class).warn(String.format("\"%s\" not found", cc));
-                    continue;
-                }
-            }
-            Currency currency = new Currency(cc, price);
-
-            currencyService.update(currency);
-        }
-        logger.info(String.format("Currency data loaded in %d milliseconds", System.currentTimeMillis() - millis));
         logger.info("Discord-API is ready!");
     }
 
     @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         if (event.getComponentId().equals("menu:currency")) {
-            if (cookie.containsKey(event.getUser().getIdLong())) {
-                if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
-                    event.getMessage().delete().queue();
+            if (cookie.containsKey(event.getUser().getIdLong()) && (cookie.get(event.getUser().getIdLong()).getLogin().equals("in"))) {
+                event.getMessage().delete().queue();
 
-                    UserAccount account;
+                UserAccount account;
 
-                    try {
-                        account = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
-                    } catch (InvalidEmailException e) {
-                        event.reply("something wrong").queue();
-                        return;
-                    }
-
-                    account.setCurrencyCode(CurrencyCode.valueOf(event.getValues().get(0)));
-
-                    accountService.save(account);
-
-                    event.reply("success").queue();
+                try {
+                    account = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                } catch (InvalidEmailException e) {
+                    event.reply("something wrong").queue();
                     return;
                 }
+
+                account.setCurrencyCode(CurrencyCode.valueOf(event.getValues().get(0)));
+
+                accountService.save(account);
+
+                event.reply("success").queue();
+                return;
+
             }
-            event.reply("You don`t log in\nType **/login**").queue();
+            event.reply(warn1).queue();
         }
     }
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        switch (event.getName()) {
+        String name = event.getName();
+        switch (name) {
             case "ping" -> {
                 long time = System.currentTimeMillis();
                 event.reply("Pong!").flatMap(v ->
@@ -166,10 +122,11 @@ public class Bot extends ListenerAdapter {
                                         System.currentTimeMillis() - time)
                         )
                         .queue();
+
             }
             case "register" -> {
                 UUID userId;
-                String tax_code;
+                String taxCode;
                 String userName;
                 String firstName;
                 String lastName;
@@ -179,7 +136,7 @@ public class Bot extends ListenerAdapter {
                 String password;
                 try {
                     userId = MiniUtil.encode(event.getUser().getId());
-                    tax_code = Objects.requireNonNull(event.getOption("taxcode")).getAsString();
+                    taxCode = Objects.requireNonNull(event.getOption("taxcode")).getAsString();
                     userName = event.getUser().getName();
                     firstName = Objects.requireNonNull(event.getOption("firstname")).getAsString();
                     lastName = Objects.requireNonNull(event.getOption("lastname")).getAsString();
@@ -207,7 +164,7 @@ public class Bot extends ListenerAdapter {
                 User user = new User();
 
                 user.setId(userId);
-                user.setTaxCode(tax_code);
+                user.setTaxCode(taxCode);
                 user.setNickName(userName);
                 user.setFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase());
                 user.setLastName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase());
@@ -229,31 +186,28 @@ public class Bot extends ListenerAdapter {
                 }
 
                 accountService.create(userAccount);
-                logger.info(userName + " was success registered");
+
+                logger.info("{} was success registered", userName);
 
                 event.reply("success to register").queue();
                 cookie.put(event.getUser().getIdLong(), new Cookie("in", user.getEmail()));
-
             }
             case "currency" -> {
                 try {
                     if (!cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
-                        event.reply("You don`t log in\nType **/login**").queue();
+                        event.reply(warn1).queue();
                         return;
                     }
                 } catch (Exception e) {
-                    event.reply("You don`t log in\nType **/login**").queue();
+                    event.reply(warn1).queue();
                     return;
                 }
-
                 StringSelectMenu.Builder builder = StringSelectMenu.create("menu:currency");
                 for (String cur : Arrays.stream(CurrencyCode.values()).map(CurrencyCode::toString).sorted().toList()) {
                     builder.addOption(cur, cur);
                 }
                 StringSelectMenu menu = builder.build();
-
                 EmbedBuilder eb = new EmbedBuilder();
-
                 eb.setTitle("Currency manager");
                 eb.setColor(Color.ORANGE);
                 eb.setDescription("One all of this\nChoose your currency:");
@@ -307,82 +261,80 @@ public class Bot extends ListenerAdapter {
                 }
             }
             case "transfer" -> {
+                if (cookie.containsKey(event.getUser().getIdLong()) && (cookie.get(event.getUser().getIdLong()).getLogin().equals("in"))) {
 
-                if (cookie.containsKey(event.getUser().getIdLong())) {
-                    if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
+                    double amount;
+                    String idba;
+                    String currency;
 
-                        double amount;
-                        String idba;
-                        String currency;
-
-                        try {
-                            amount = Objects.requireNonNull(event.getOption("amount")).getAsDouble();
-                            idba = Objects.requireNonNull(event.getOption("idba")).getAsString();
-                            currency = Objects.requireNonNull(event.getOption("currency")).getAsString();
-                        } catch (Exception e) {
-                            event.reply("Some field is empty").queue();
-                            return;
-                        }
-                        UserAccount accountFrom;
-                        UserAccount accountTo;
-
-                        try {
-                            accountFrom = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
-                            accountTo = accountService.findByIDBA(idba);
-                        } catch (InvalidEmailException e) {
-                            event.reply("some error").queue();
-                            return;
-                        } catch (InvalidIDBAException e) {
-                            event.reply("invalid IDBA").queue();
-                            return;
-                        }
-
-                        if (accountFrom.getIdba().equals(accountTo.getIdba())) {
-                            event.reply("U can`t send money for yourself").queue();
-                            return;
-                        }
-
-                        if (!accountService.transfer(accountFrom, accountTo, currency, amount)) {
-                            event.reply("Not enough money").queue();
-                            return;
-                        }
-
-                        event.reply("Check accounts").queue();
-                    }
-                }
-                event.reply("You don`t log in\nType **/login**").queue();
-            }
-            case "account" -> {
-                if (cookie.containsKey(event.getUser().getIdLong())) {
-                    if (cookie.get(event.getUser().getIdLong()).getLogin().equals("in")) {
-                        UserAccount account;
-
-                        try {
-                            account = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
-                        } catch (InvalidEmailException e) {
-                            event.reply("something wrong").queue();
-                            return;
-                        }
-
-                        EmbedBuilder eb = new EmbedBuilder();
-
-                        eb.setTitle("Account manager");
-                        eb.setColor(Color.GREEN);
-                        eb.setDescription("information about your account");
-                        eb.addField("IDBA", account.getIdba(), false);
-                        eb.addField("Currency", account.getCurrencyCode() == null ? "/currency" : account.getCurrencyCode().toString(), false);
-                        eb.addField("Balance", account.getBalance().toString(), false);
-                        eb.addField("Status", account.getAccountStatus().toString(), false);
-
-                        eb.setFooter(account.getCreatedAt().toString());
-
-                        event.replyEmbeds(eb.build()).queue();
-
+                    try {
+                        amount = Objects.requireNonNull(event.getOption("amount")).getAsDouble();
+                        idba = Objects.requireNonNull(event.getOption("idba")).getAsString();
+                        currency = Objects.requireNonNull(event.getOption("currency")).getAsString();
+                    } catch (Exception e) {
+                        event.reply("Some field is empty").queue();
                         return;
                     }
+                    UserAccount accountFrom;
+                    UserAccount accountTo;
+
+                    try {
+                        accountFrom = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                        accountTo = accountService.findByIDBA(idba);
+                    } catch (InvalidEmailException e) {
+                        event.reply("some error").queue();
+                        return;
+                    } catch (InvalidIDBAException e) {
+                        event.reply("invalid IDBA").queue();
+                        return;
+                    }
+
+                    if (accountFrom.getIdba().equals(accountTo.getIdba())) {
+                        event.reply("U can`t send money for yourself").queue();
+                        return;
+                    }
+
+                    if (!accountService.transfer(accountFrom, accountTo, currency, amount)) {
+                        event.reply("Not enough money").queue();
+                        return;
+                    }
+
+                    event.reply("Check accounts").queue();
+
                 }
-                event.reply("You don`t log in\nType **/login**").queue();
+                event.reply(warn1).queue();
             }
+            case "account" -> {
+                if (cookie.containsKey(event.getUser().getIdLong()) && (cookie.get(event.getUser().getIdLong()).getLogin().equals("in"))) {
+                    UserAccount account;
+
+                    try {
+                        account = accountService.findByEmail(cookie.get(event.getUser().getIdLong()).getEmail());
+                    } catch (InvalidEmailException e) {
+                        event.reply("something wrong").queue();
+                        return;
+                    }
+
+                    EmbedBuilder eb = new EmbedBuilder();
+
+                    eb.setTitle("Account manager");
+                    eb.setColor(Color.GREEN);
+                    eb.setDescription("information about your account");
+                    eb.addField("IDBA", account.getIdba(), false);
+                    eb.addField("Currency", account.getCurrencyCode() == null ? "/currency" : account.getCurrencyCode().toString(), false);
+                    eb.addField("Balance", account.getBalance().toString(), false);
+                    eb.addField("Status", account.getAccountStatus().toString(), false);
+
+                    eb.setFooter(account.getCreatedAt().toString());
+
+                    event.replyEmbeds(eb.build()).queue();
+
+                    return;
+
+                }
+                event.reply(warn1).queue();
+            }
+            default -> event.reply("What do u write?").queue();
         }
     }
 }

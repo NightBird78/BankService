@@ -1,9 +1,8 @@
-package com.discordshopping.bot.util;
+package com.discordshopping.bot.util.validator.annotation;
 
+import com.discordshopping.bot.util.validator.constraint.ValidUUIDConstraint;
 import com.discordshopping.exception.enums.ErrorMessage;
 import jakarta.validation.Constraint;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.ElementType;
@@ -22,14 +21,3 @@ public @interface ValidUUID {
     Class<? extends Payload>[] payload() default {};
 }
 
-class ValidUUIDConstraint implements ConstraintValidator<ValidUUID, String> {
-    @Override
-    public void initialize(ValidUUID constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
-
-    @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return MiniUtil.isValidUUID(s);
-    }
-}

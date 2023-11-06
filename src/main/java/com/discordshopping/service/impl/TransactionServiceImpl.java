@@ -10,6 +10,7 @@ import com.discordshopping.service.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,5 +29,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto findDtoById(String id) {
         return transactionMapper.transactionToDto(findById(id));
+    }
+
+    @Override
+    public List<TransactionDto> findAllByAccountId(String id) {
+        return transactionMapper.transactionToDto(transactionRepository.findAllByAccountId(id));
     }
 }

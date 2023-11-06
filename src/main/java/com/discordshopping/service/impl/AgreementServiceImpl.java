@@ -10,6 +10,7 @@ import com.discordshopping.service.repository.AgreementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,5 +30,10 @@ public class AgreementServiceImpl implements AgreementService {
     public AgreementDto findDtoById(String id) {
         return agreementMapper.agreementToDto(findById(id));
 
+    }
+
+    @Override
+    public List<AgreementDto> findAllDtoById(String id) {
+        return agreementMapper.agreementToDto(agreementRepository.findAllByAccountId(id));
     }
 }

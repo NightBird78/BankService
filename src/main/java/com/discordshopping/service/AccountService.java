@@ -14,8 +14,6 @@ public interface AccountService {
 
     boolean create(UserAccount account);
 
-    boolean create(AccountDto accountDto);
-
     void save(UserAccount account);
 
     UserAccount findByEmail(String email);
@@ -25,4 +23,6 @@ public interface AccountService {
     AccountDto findDtoById(String id);
 
     AccountDto merge(AccountUpdatedDto dto, String id);
+
+    AccountDto findDtoByUserId(String id);
 }

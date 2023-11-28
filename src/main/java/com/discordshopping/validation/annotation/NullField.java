@@ -1,7 +1,6 @@
-package com.discordshopping.bot.util.validator.annotation;
+package com.discordshopping.validation.annotation;
 
-import com.discordshopping.bot.util.validator.constraint.ValidUUIDConstraint;
-import com.discordshopping.exception.enums.ErrorMessage;
+import com.discordshopping.validation.constraint.NullFieldConstraint;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -12,12 +11,11 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-@Constraint(validatedBy = ValidUUIDConstraint.class)
-public @interface ValidUUID {
-    String message() default ErrorMessage.INVALID_UUID_FORMAT;
+@Constraint(validatedBy = NullFieldConstraint.class)
+public @interface NullField {
+    String message() default "one of field is NULL";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 }
-

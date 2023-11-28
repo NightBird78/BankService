@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="insert bank into users" author="NightBird78">
+        <insert tableName="users">
+            <column name="id" valueComputed="UUID_TO_BIN('00000000-0000-0000-0000-000000000000')"/>
+            <column name="tax_code" value="xxxxxxxx"/>
+            <column name="user_name" value="bank"/>
+            <column name="created_at" value="2000-01-1 00:00:00"/>
+            <column name="updated_at" value="2000-01-1 00:00:00"/>
+        </insert>
+    </changeSet>
+    
+    <changeSet id="insert bank into accounts" author="NightBird78">
+        <insert tableName="accounts">
+            <column name="id" valueComputed="UUID_TO_BIN('00000000-0000-0000-0000-000000000000')"/>
+            <column name="client_id" valueComputed="UUID_TO_BIN('00000000-0000-0000-0000-000000000000')"/>
+            <column name="IDBA" value="IDBA0000000000000000"/>
+            <column name="account_status" value="BANK"/>
+            <column name="balance" value="1000000000.0"/>
+            <column name="currency_code" value="USD"/>
+            <column name="created_at" value="2000-01-1 00:00:00"/>
+            <column name="updated_at" value="2000-01-1 00:00:00"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

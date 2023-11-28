@@ -7,12 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionDto {
-    String id;
-    String type;
-    String from_user;
-    String to_user;
-    String amount;
-    String description;
-    String date;
+public class AgreementCreatedDto {
+    String accountId;
+    String productId;
+    String currencyCode;
+    String sum;
 }

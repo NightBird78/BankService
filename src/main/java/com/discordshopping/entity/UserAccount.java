@@ -50,8 +50,7 @@ public class UserAccount {
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "IDBA")
-    @GeneratedValue(generator = "java(MiniUtil.createBankIdentifier())")
+    @Column(name = "IDBA", nullable = false)
     private String idba;
 
     @Column(name = "account_status")
@@ -65,12 +64,12 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private CurrencyCode currencyCode;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -97,14 +96,11 @@ public class UserAccount {
     public String toString() {
         return "UserAccount{" +
                 "id=" + id +
-                ", user=" + user +
                 ", accountStatus=" + accountStatus +
                 ", balance=" + balance +
                 ", currency=" + currencyCode +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", transactions=" + transactions +
-                ", agreements=" + agreements +
                 '}';
     }
 }

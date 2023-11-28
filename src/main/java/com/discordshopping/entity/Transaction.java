@@ -1,7 +1,18 @@
 package com.discordshopping.entity;
 
 import com.discordshopping.entity.enums.TransactionType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,47 +43,49 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    @Column(name = "amount")
-    private Double amount;
-
     @ManyToOne(cascade = {MERGE, PERSIST, REFRESH})
     @JoinColumn(name = "debit_account_id", referencedColumnName = "id")
     private UserAccount debitUserAccount;
+
+    @Column(name = "amount_from")
+    private Double amountFrom;
 
     @ManyToOne(cascade = {MERGE, PERSIST, REFRESH})
     @JoinColumn(name = "credit_account_id", referencedColumnName = "id")
     private UserAccount creditUserAccount;
 
+    @Column(name = "amount_to")
+    private Double amountTo;
+
     @Column(name = "transaction_description")
     private String description;
 
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Transaction that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(debitUserAccount, that.debitUserAccount) && Objects.equals(creditUserAccount, that.creditUserAccount);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Transaction that)) return false;
+        return Objects.equals(id, that.id) && transactionType == that.transactionType && Objects.equals(description, that.description) && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, debitUserAccount, creditUserAccount);
+        return Objects.hash(id, transactionType, description, createdAt);
     }
 
     @Override
     public String toString() {
         return "Transaction{" +
                 "id=" + id +
-                ", debitAccount=" + debitUserAccount +
-                ", creditAccount=" + creditUserAccount +
                 ", transactionType=" + transactionType +
-                ", amount=" + amount +
+                ", amountFrom=" + amountFrom +
+                ", amountTo=" + amountTo +
+                ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }

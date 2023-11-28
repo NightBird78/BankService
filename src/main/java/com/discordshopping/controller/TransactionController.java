@@ -1,7 +1,9 @@
 package com.discordshopping.controller;
 
-import com.discordshopping.bot.util.validator.annotation.ValidUUID;
+import com.discordshopping.validation.annotation.ValidIDBA;
+import com.discordshopping.validation.annotation.ValidUUID;
 import com.discordshopping.entity.dto.TransactionDto;
+import com.discordshopping.entity.dto.TransactionDtoShort;
 import com.discordshopping.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -20,12 +22,17 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
-    @GetMapping("/get/details")
-    public TransactionDto getTransaction(@ValidUUID @Param("id") String id) {
-        return transactionService.findDtoById(id);
+    @GetMapping("/get/detail")
+    public TransactionDto getTransaction(@ValidUUID @Param("id") String id, @ValidIDBA @Param("idba") String idba) {
+        return transactionService.findDtoById(id, idba);
     }
-    @GetMapping("/get/all-by-account")
+    @GetMapping("/get/all/by-account")
     public List<TransactionDto> getAllTransactions(@ValidUUID @Param("id") String id) {
         return transactionService.findAllByAccountId(id);
+    }
+
+    @GetMapping("/get/all/by-account/short")
+    public List<TransactionDtoShort> getAllShortTransactions(@ValidUUID @Param("id") String id) {
+        return transactionService.findAllShortByAccountId(id);
     }
 }

@@ -1,7 +1,7 @@
 package com.discordshopping.controller;
 
-import com.discordshopping.bot.util.validator.annotation.NullField;
-import com.discordshopping.bot.util.validator.annotation.ValidUUID;
+import com.discordshopping.validation.annotation.NullField;
+import com.discordshopping.validation.annotation.ValidUUID;
 import com.discordshopping.entity.dto.UserCreatedDto;
 import com.discordshopping.entity.dto.UserDto;
 import com.discordshopping.entity.dto.UserUpdatedDto;

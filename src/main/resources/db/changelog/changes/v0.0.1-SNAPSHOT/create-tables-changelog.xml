@@ -100,11 +100,12 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             <column name="debit_account_id" type="binary(16)">
                 <constraints foreignKeyName="debit_account_id" references="accounts(id)"/>
             </column>
+            <column name="amount_from" type="decimal(15,2)"/>
             <column name="credit_account_id" type="binary(16)">
                 <constraints foreignKeyName="credit_account_id" references="accounts(id)"/>
             </column>
+            <column name="amount_to" type="decimal(15,2)"/>
             <column name="transaction_type" type="varchar(50)"/>
-            <column name="amount" type="decimal(15,2)"/>
             <column name="transaction_description" type="varchar(255)"/>
             <column name="created_at" type="timestamp"/>
         </createTable>
@@ -132,6 +133,8 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             <column name="discount_rate" type="numeric(4,2)"/>
             <column name="agreement_limit" type="numeric(15,2)"/>
             <column name="sum" type="numeric(15,2)"/>
+            <column name="original_sum" type="numeric(15,2)"/>
+            <column name="paid_sum" type="numeric(15,2)"/>
             <column name="created_at" type="timestamp"/>
             <column name="updated_at" type="timestamp"/>
         </createTable>

@@ -7,5 +7,6 @@ public enum AccountStatus {
     Frozen,
     Closed,
     Privileged,
-    WithDebt
+    WithDebt,
+    BANK
 }

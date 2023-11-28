@@ -5,12 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ProductDto {
-    String id;
-    String type;
-    String status;
-    String interestRate;
-    String date;
+@NoArgsConstructor
+public class TransactionDtoShort {
+    private String amount;
+    private String IDBA;
 }

@@ -3,6 +3,7 @@ package com.discordshopping.service;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.dto.AccountDto;
 import com.discordshopping.entity.dto.AccountUpdatedDto;
+import com.discordshopping.entity.dto.TransactionDto;
 
 public interface AccountService {
 
@@ -18,7 +19,9 @@ public interface AccountService {
 
     UserAccount findByEmail(String email);
 
-    boolean transfer(UserAccount from, UserAccount to, String currency, Double amount);
+    boolean transfer(UserAccount from, UserAccount to, String currency, Double amount, String describe);
+
+    TransactionDto transfer(String fromIDBA, String toIDBA, String currency, String amount, String description, String type);
 
     AccountDto findDtoById(String id);
 

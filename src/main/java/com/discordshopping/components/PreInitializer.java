@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.util.Map;
 
 @Profile("!test")
@@ -21,18 +22,48 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PreInitializer implements CommandLineRunner {
 
+    private static final String config = "config.json";
+
+
     private final UserService userService;
     private final AccountService accountService;
     private final CurrencyService currencyService;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private String botToken;
+    private String bankAPI;
+
     @Override
     public void run(String... args) {
+        init();
+
         loadCurrency();
         loadDiscordAPI();
     }
 
+    private void init() {
+        Map<String, String> map;
+
+        try {
+            map = JsonParser.parseConfig(config);
+        } catch (FileNotFoundException e) {
+            logger.error("config file is not found!");
+            return;
+        }
+
+        if (map == null) {
+            logger.error("config file not readable");
+            return;
+        }
+
+        botToken = map.get("botToken");
+        bankAPI = map.get("bankAPI");
+    }
+
     private void loadCurrency() {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
+        if (bankAPI == null) {
+            return;
+        }
 
         logger.info("Loading currency from bank API...");
         long millis = System.currentTimeMillis();
@@ -40,7 +71,7 @@ public class PreInitializer implements CommandLineRunner {
         Map<CurrencyCode, Double> map;
 
         try {
-            map = JsonParser.parseCurrency();
+            map = JsonParser.parseCurrency(bankAPI);
         } catch (Exception e) {
             logger.warn("cannot load currency from bank-API");
             return;
@@ -63,15 +94,17 @@ public class PreInitializer implements CommandLineRunner {
             currencyService.update(currency);
         }
         logger.info("Currency data loaded in {} milliseconds", System.currentTimeMillis() - millis);
-
     }
 
     private void loadDiscordAPI() {
+        if (botToken == null) {
+            return;
+        }
+
         try {
-            Bot.bot(userService, accountService);
-        } catch (InterruptedException e) {
-            LoggerFactory.getLogger(PreInitializer.class).warn("Cannot load Discord-API");
-            Thread.currentThread().interrupt();
+            Bot.bot(userService, accountService, botToken);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(PreInitializer.class).warn("Cannot startup Discord-API");
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.discordshopping.controller;
 
-import com.discordshopping.bot.util.validator.annotation.ValidUUID;
+import com.discordshopping.validation.annotation.ValidUUID;
 import com.discordshopping.entity.dto.ProductDto;
 import com.discordshopping.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/get/details")
+    @GetMapping("/get/detail")
     public ProductDto getProduct(@ValidUUID @Param("id") String id) {
         return productService.findDtoById(id);
     }

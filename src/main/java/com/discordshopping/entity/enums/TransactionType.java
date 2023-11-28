@@ -8,5 +8,6 @@ public enum TransactionType {
     businessBankTransfers,
     onlineTransfersAndPaymentPlatforms,
     internationalTransfers,
-    investmentTransactions
+    investmentTransactions,
+    AgreementTransactions // special
 }

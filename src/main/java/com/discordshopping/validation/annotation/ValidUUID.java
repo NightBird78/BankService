@@ -1,6 +1,6 @@
-package com.discordshopping.bot.util.validator.annotation;
+package com.discordshopping.validation.annotation;
 
-import com.discordshopping.bot.util.validator.constraint.ValidEmailConstraint;
+import com.discordshopping.validation.constraint.ValidUUIDConstraint;
 import com.discordshopping.exception.enums.ErrorMessage;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -11,12 +11,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
-@Constraint(validatedBy = ValidEmailConstraint.class)
-public @interface ValidEmail {
-    String message() default ErrorMessage.INVALID_EMAIL_FORMAT;
+@Target(ElementType.PARAMETER)
+@Constraint(validatedBy = ValidUUIDConstraint.class)
+public @interface ValidUUID {
+    String message() default ErrorMessage.INVALID_UUID_FORMAT;
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 }
+

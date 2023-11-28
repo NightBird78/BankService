@@ -12,6 +12,6 @@ import java.util.UUID;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
-    @Query("select t from Transaction t where t.creditUserAccount.id = :id")
-    List<Transaction> findAllByAccountId(@Param("id") String id);
+    @Query("select t from Transaction t where t.creditUserAccount.id = :id or t.debitUserAccount.id =:id")
+    List<Transaction> findAllByAccountId(@Param("id") UUID id);
 }

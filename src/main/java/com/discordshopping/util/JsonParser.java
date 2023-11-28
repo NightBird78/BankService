@@ -1,6 +1,5 @@
 package com.discordshopping.util;
 
-import com.discordshopping.bot.util.Constant;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.CurrencyParsed;
 import com.discordshopping.entity.enums.CurrencyCode;
@@ -8,24 +7,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JsonParser {
 
-    public static String getAllCurrency() {
+    static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static String getAllCurrency(String bankAPI) {
         URL url;
         try {
-            url = new URL(Constant.CurrencyAPI);
+            url = new URL(bankAPI);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -38,12 +40,10 @@ public class JsonParser {
         return String.join(",\n", jsonstring.split(","));
     }
 
-    public static Map<CurrencyCode, Double> parseCurrency() throws JsonProcessingException {
+    public static Map<CurrencyCode, Double> parseCurrency(String bankAPI) throws JsonProcessingException {
         List<CurrencyParsed> currencies = new ArrayList<>();
-
-        ObjectMapper objectMapper = new ObjectMapper();
         List<Map<String, Object>> dataMap = objectMapper
-                .readValue(JsonParser.getAllCurrency(), new TypeReference<>() {
+                .readValue(JsonParser.getAllCurrency(bankAPI), new TypeReference<>() {
                 });
 
         for (Map<String, Object> map : dataMap) {
@@ -82,5 +82,32 @@ public class JsonParser {
                 .distinct()
                 .map(CurrencyParsed::getCurrency)
                 .collect(Collectors.toMap(Currency::getCurrencyCode, Currency::getPrice));
+    }
+
+    public static Map<String, String> parseConfig(String filename) throws FileNotFoundException {
+
+        StringBuilder string = new StringBuilder();
+
+        try (FileReader fileReader = new FileReader(filename)) {
+
+            int bit;
+
+            while ((bit = fileReader.read()) != -1){
+                string.append((char) bit);
+            }
+
+            return objectMapper.readValue(string.toString(), new TypeReference<>() {});
+
+        } catch (IOException e) {
+            if (e instanceof FileNotFoundException) {
+                throw (FileNotFoundException) e;
+            }
+            else {
+                Logger logger = LoggerFactory.getLogger(JsonParser.class);
+
+                logger.error(e.getMessage());
+                return null;
+            }
+        }
     }
 }

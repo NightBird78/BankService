@@ -35,12 +35,6 @@ build/
 /mvnw
 /.mvn/
 
-/src/main/java/com/discordshopping/manipulate.sql
-/src/main/java/com/discordshopping/resource/
-/src/main/java/com/discordshopping/bot/util/Constant.java
-/src/test/
-/src/main/java/com/discordshopping/service/Main.java
-/src/main/java/com/discordshopping/Main.java
-/src/main/java/com/discordshopping/text.txt
-/src/main/java/com/discordshopping/MyObject.java
 /testDB.*.db
+/config.json
+/src/main/java/com/discordshopping/trash/

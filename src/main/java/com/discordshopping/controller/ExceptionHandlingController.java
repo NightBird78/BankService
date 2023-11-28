@@ -7,6 +7,8 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.FileAlreadyExistsException;
+
 import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
@@ -15,7 +17,9 @@ public class ExceptionHandlingController {
     @ExceptionHandler({
             InvalidUUIDException.class,
             IllegalArgumentException.class,
-            ConstraintViolationException.class})
+            ConstraintViolationException.class,
+            NumberFormatException.class,
+            AlreadyExistsException.class})
     public ResponseEntity<ErrorResponse> invalidHandler(Throwable ex) {
         ErrorResponse response = ErrorResponse.builder(ex, BAD_REQUEST, ex.getMessage()).build();
 

@@ -1,6 +1,8 @@
 package com.discordshopping.service.impl;
 
-import com.discordshopping.bot.util.MiniUtil;
+import com.discordshopping.exception.AlreadyExistsException;
+import com.discordshopping.service.repository.AccountRepository;
+import com.discordshopping.util.Util;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.dto.UserCreatedDto;
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final AccountRepository accountRepository;
 
     @Override
     public User findById(String id) {
@@ -87,13 +90,18 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToDto(user);
     }
 
+    @Transactional
     @Override
     public UserDto create(UserCreatedDto dto) {
 
         try {
-            dto.setPassword(MiniUtil.encode(dto.getPassword()).toString());
+            dto.setPassword(Util.encode(dto.getPassword()).toString());
         } catch (NoSuchAlgorithmException e) {
             throw new InternalTechnicalErrorException(ErrorMessage.TECHNICAL_ERROR);
+        }
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()){
+            throw new AlreadyExistsException(ErrorMessage.DATA_EXIST);
         }
 
         User user = userMapper.dtoToUser(dto);
@@ -102,6 +110,10 @@ public class UserServiceImpl implements UserService {
         UserAccount uAccount = new UserAccount();
         uAccount.setUser(user);
         uAccount.setAccountStatus(AccountStatus.Active);
+        uAccount.setBalance(0.);
+        uAccount.setIdba(Util.createBankIdentifier());
+
+        accountRepository.save(uAccount);
 
         return userMapper.userToDto(user);
     }

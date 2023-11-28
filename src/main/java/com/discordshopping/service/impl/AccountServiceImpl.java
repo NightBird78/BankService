@@ -1,16 +1,21 @@
 package com.discordshopping.service.impl;
 
-import com.discordshopping.bot.util.MiniUtil;
+import com.discordshopping.util.Util;
 import com.discordshopping.entity.Currency;
+import com.discordshopping.entity.Transaction;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.dto.AccountDto;
 import com.discordshopping.entity.dto.AccountUpdatedDto;
+import com.discordshopping.entity.dto.TransactionDto;
 import com.discordshopping.entity.enums.CurrencyCode;
+import com.discordshopping.entity.enums.TransactionType;
 import com.discordshopping.exception.InvalidEmailException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.AccountMapper;
+import com.discordshopping.mapper.TransactionMapper;
 import com.discordshopping.service.AccountService;
+import com.discordshopping.service.TransactionService;
 import com.discordshopping.service.repository.AccountRepository;
 import com.discordshopping.service.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +32,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final CurrencyRepository currencyRepository;
     private final AccountMapper accountMapper;
+    private final TransactionService transactionService;
+    private final TransactionMapper transactionMapper;
 
     @Override
     public UserAccount findById(String id) {
@@ -36,7 +43,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public UserAccount findByIDBA(String idba) {
-
         return accountRepository.findByIDBA(idba)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
 
@@ -66,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserAccount findByEmail(String email) {
 
-        if (!MiniUtil.isValidEmail(email)) {
+        if (!Util.isValidEmail(email)) {
             throw new InvalidEmailException(ErrorMessage.INVALID_EMAIL_FORMAT);
         }
 
@@ -76,29 +82,64 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public boolean transfer(UserAccount from, UserAccount to, String currency, Double amount) {
+    public boolean transfer(UserAccount from, UserAccount to, String currency, Double amount, String describe) {
+        try {
+            transfer(from.getIdba(), to.getIdba(), currency, amount.toString(), describe, TransactionType.transferFunds.toString());
+            return true;
+        } catch (Throwable ignore) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public TransactionDto transfer(String fromIDBA, String toIDBA, String currency, String amountSrt, String description, String type) {
+        Optional<UserAccount> optFrom = accountRepository.findByIDBA(fromIDBA);
+        Optional<UserAccount> optTo = accountRepository.findByIDBA(toIDBA);
+
+        if (optFrom.isEmpty() || optTo.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.DATA_NOT_FOUND);
+        }
+
+        try {
+            CurrencyCode.valueOf(currency.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException(ErrorMessage.INVALID_CURRENCY);
+        }
+
+        UserAccount from = optFrom.get();
+        UserAccount to = optTo.get();
 
         CurrencyCode fromC = from.getCurrencyCode();
         CurrencyCode toC = to.getCurrencyCode();
+
+        if (fromC == null) {
+            throw new NotFoundException("currency of user with IDBA: %s, not setted".formatted(fromIDBA));
+        }
+
+        if (toC == null) {
+            throw new NotFoundException("currency of user with IDBA: %s, not setted".formatted(toIDBA));
+        }
 
         Optional<Currency> optCf = currencyRepository.findById(fromC);
         Optional<Currency> optCt = currencyRepository.findById(toC);
         Optional<Currency> ofC = currencyRepository.findById(CurrencyCode.valueOf(currency));
 
-
         if (optCf.isEmpty() || optCt.isEmpty() || ofC.isEmpty()) {
-            return false;
+            throw new NotFoundException("deprecated data");
         }
 
         Double fromK = optCf.get().price;
         Double toK = optCt.get().price;
         Double ofK = ofC.get().price;
 
+        double amount = Double.parseDouble(amountSrt);
+
         Double amountT = amount * (ofK / toK);
         Double amountF = amount * (ofK / fromK);
 
         if (from.getBalance() < amountF) {
-            return false;
+            throw new IllegalArgumentException("not enough of money");
         }
 
         from.setBalance(from.getBalance() - amountF);
@@ -107,7 +148,15 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(from);
         accountRepository.save(to);
 
-        return true;
+        Transaction transaction = new Transaction();
+        transaction.setAmountTo(amountT);
+        transaction.setAmountFrom(amountF);
+        transaction.setTransactionType(TransactionType.valueOf(type));
+        transaction.setDescription(description);
+        transaction.setDebitUserAccount(from);
+        transaction.setCreditUserAccount(to);
+
+        return transactionMapper.transactionToDto(transactionService.save(transaction), fromIDBA);
     }
 
     @Override

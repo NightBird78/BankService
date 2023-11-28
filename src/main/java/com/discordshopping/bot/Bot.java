@@ -1,8 +1,7 @@
 package com.discordshopping.bot;
 
-import com.discordshopping.bot.util.Constant;
-import com.discordshopping.bot.util.Cookie;
-import com.discordshopping.bot.util.MiniUtil;
+import com.discordshopping.util.Cookie;
+import com.discordshopping.util.Util;
 import com.discordshopping.entity.User;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.entity.enums.AccountStatus;
@@ -26,8 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class Bot extends ListenerAdapter {
@@ -48,8 +51,9 @@ public class Bot extends ListenerAdapter {
 
     public static void bot(
             UserService userService,
-            AccountService accountService) throws InterruptedException {
-        JDA jda = JDABuilder.createLight(Constant.token)
+            AccountService accountService,
+            String token) throws InterruptedException {
+        JDA jda = JDABuilder.createLight(token)
                 .addEventListeners(new Bot(userService, accountService))
                 .build();
 
@@ -135,7 +139,7 @@ public class Bot extends ListenerAdapter {
                 double earning;
                 String password;
                 try {
-                    userId = MiniUtil.encode(event.getUser().getId());
+                    userId = Util.encode(event.getUser().getId());
                     taxCode = Objects.requireNonNull(event.getOption("taxcode")).getAsString();
                     userName = event.getUser().getName();
                     firstName = Objects.requireNonNull(event.getOption("firstname")).getAsString();
@@ -143,7 +147,7 @@ public class Bot extends ListenerAdapter {
                     email = Objects.requireNonNull(event.getOption("email")).getAsString();
                     address = Objects.requireNonNull(event.getOption("address")).getAsString();
                     earning = Double.parseDouble(Objects.requireNonNull(event.getOption("earning")).getAsString());
-                    password = MiniUtil.encode(
+                    password = Util.encode(
                                     Objects.requireNonNull(event.getOption("password"))
                                             .getAsString()
                             )
@@ -156,7 +160,7 @@ public class Bot extends ListenerAdapter {
                     return;
                 }
 
-                if (!MiniUtil.isValidEmail(email)) {
+                if (!Util.isValidEmail(email)) {
                     event.reply("invalid email").queue();
                     return;
                 }
@@ -218,7 +222,7 @@ public class Bot extends ListenerAdapter {
                 String password;
                 try {
                     email = Objects.requireNonNull(event.getOption("email")).getAsString();
-                    password = MiniUtil.encode(
+                    password = Util.encode(
                                     Objects.requireNonNull(event.getOption("password"))
                                             .getAsString()
                             )
@@ -266,11 +270,13 @@ public class Bot extends ListenerAdapter {
                     double amount;
                     String idba;
                     String currency;
+                    String desc;
 
                     try {
                         amount = Objects.requireNonNull(event.getOption("amount")).getAsDouble();
                         idba = Objects.requireNonNull(event.getOption("idba")).getAsString();
                         currency = Objects.requireNonNull(event.getOption("currency")).getAsString();
+                        desc = Objects.requireNonNull(event.getOption("desc")).getAsString();
                     } catch (Exception e) {
                         event.reply("Some field is empty").queue();
                         return;
@@ -294,13 +300,13 @@ public class Bot extends ListenerAdapter {
                         return;
                     }
 
-                    if (!accountService.transfer(accountFrom, accountTo, currency, amount)) {
+                    if (!accountService.transfer(accountFrom, accountTo, currency, amount, desc)) {
                         event.reply("Not enough money").queue();
                         return;
                     }
 
                     event.reply("Check accounts").queue();
-
+                    return;
                 }
                 event.reply(warn1).queue();
             }

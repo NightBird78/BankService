@@ -3,11 +3,9 @@ package com.discordshopping.entity;
 import com.discordshopping.entity.enums.AgreementStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DialectOverride;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -38,6 +36,8 @@ public class Agreement {
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
 
+    // default is rate of product
+    // every month/year sum will be more on interest
     @Column(name = "interest_rate")
     private Double interestRate;
 
@@ -49,14 +49,27 @@ public class Agreement {
     @Enumerated(EnumType.STRING)
     private AgreementStatus agreementStatus;
 
+    // every 1_000$ of sum = discount + 0.1%
+    // interest - discount, discount only for it
     @Column(name = "discount_rate")
     private Double discountRate;
 
+    // max of account get money, counting as salary * 10 years
     @Column(name = "agreement_limit")
     private Double agreementLimit;
 
+    // how many account get money, and how many will pay with interest
+    // when it = 0.0, status change to "Completed"
     @Column(name = "sum")
     private Double sum;
+
+    @Column(name="original_sum")
+    // how many account get money, and how many will pay
+    private Double originalSum;
+
+    @Column(name="paid_sum")
+    // how much has already been paid
+    private Double paidSum;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,4 +1,4 @@
-package com.discordshopping.bot.util;
+package com.discordshopping.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

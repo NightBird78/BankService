@@ -2,10 +2,12 @@ package com.discordshopping.controller;
 
 import com.discordshopping.validation.annotation.NullField;
 import com.discordshopping.validation.annotation.ValidUUID;
-import com.discordshopping.entity.dto.UserCreatedDto;
-import com.discordshopping.entity.dto.UserDto;
-import com.discordshopping.entity.dto.UserUpdatedDto;
+import com.discordshopping.dto.UserCreatedDto;
+import com.discordshopping.dto.UserDto;
+import com.discordshopping.dto.UserUpdatedDto;
 import com.discordshopping.service.UserService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;

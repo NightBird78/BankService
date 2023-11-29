@@ -1,8 +1,8 @@
 package com.discordshopping.service.impl;
 
 import com.discordshopping.entity.Transaction;
-import com.discordshopping.entity.dto.TransactionDto;
-import com.discordshopping.entity.dto.TransactionDtoShort;
+import com.discordshopping.dto.TransactionDto;
+import com.discordshopping.dto.TransactionDtoShort;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.TransactionMapper;

@@ -1,11 +1,11 @@
 package com.discordshopping.controller;
 
-import com.discordshopping.entity.dto.AgreementFullDto;
+import com.discordshopping.dto.AgreementFullDto;
 import com.discordshopping.validation.annotation.NullField;
 import com.discordshopping.validation.annotation.NumLike;
 import com.discordshopping.validation.annotation.ValidUUID;
-import com.discordshopping.entity.dto.AgreementCreatedDto;
-import com.discordshopping.entity.dto.AgreementDto;
+import com.discordshopping.dto.AgreementCreatedDto;
+import com.discordshopping.dto.AgreementDto;
 import com.discordshopping.service.AgreementService;
 import com.discordshopping.util.Util;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class AgreementController {
     }
 
     @RequestMapping(value = "/new", method = {RequestMethod.POST, RequestMethod.GET})
-    public ResponseEntity<List<Object>> createAgreement(@NullField @RequestBody AgreementCreatedDto agreementCreatedDto) {
+    public AgreementDto createAgreement(@NullField @RequestBody AgreementCreatedDto agreementCreatedDto) {
         return agreementService.create(agreementCreatedDto);
     }
 }

@@ -2,12 +2,10 @@ package com.discordshopping.service.impl;
 
 import com.discordshopping.entity.Agreement;
 import com.discordshopping.entity.Product;
-import com.discordshopping.entity.Transaction;
 import com.discordshopping.entity.UserAccount;
-import com.discordshopping.entity.dto.AgreementCreatedDto;
-import com.discordshopping.entity.dto.AgreementDto;
-import com.discordshopping.entity.dto.AgreementFullDto;
-import com.discordshopping.entity.dto.TransactionDto;
+import com.discordshopping.dto.AgreementCreatedDto;
+import com.discordshopping.dto.AgreementDto;
+import com.discordshopping.dto.AgreementFullDto;
 import com.discordshopping.entity.enums.AgreementStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
 import com.discordshopping.entity.enums.TransactionType;
@@ -17,11 +15,9 @@ import com.discordshopping.mapper.AgreementMapper;
 import com.discordshopping.service.AccountService;
 import com.discordshopping.service.AgreementService;
 import com.discordshopping.service.ProductService;
-import com.discordshopping.service.TransactionService;
 import com.discordshopping.service.repository.AgreementRepository;
 import com.discordshopping.util.Util;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,12 +52,14 @@ public class AgreementServiceImpl implements AgreementService {
 
     @Override
     @Transactional
-    public ResponseEntity<List<Object>> create(AgreementCreatedDto createdDto) {
+    public AgreementDto create(AgreementCreatedDto createdDto) {
 
         Product product = productService.findById(createdDto.getProductId());
         UserAccount account = accountService.findById(createdDto.getAccountId());
 
         Agreement agreement = new Agreement();
+
+        System.out.println(agreement);
 
         agreement.setProduct(product);
         agreement.setUserAccount(account);
@@ -76,9 +74,7 @@ public class AgreementServiceImpl implements AgreementService {
         agreement.setSum(agreement.getOriginalSum());
         agreement.setPaidSum(0.0);
 
-        agreementRepository.save(agreement);
-
-        TransactionDto tr = accountService.transfer(
+        accountService.transfer(
                 "IDBA0000000000000000",
                 account.getIdba(),
                 agreement.getCurrencyCode().toString(),
@@ -87,12 +83,7 @@ public class AgreementServiceImpl implements AgreementService {
                 TransactionType.AgreementTransactions.toString()
         );
 
-        return ResponseEntity.ok(
-                List.of(
-                        agreementMapper.agreementToDto(agreement),
-                        tr
-                )
-        );
+        return agreementMapper.agreementToDto(agreementRepository.save(agreement));
 
     }
 

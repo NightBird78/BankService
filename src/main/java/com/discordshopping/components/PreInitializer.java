@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.FileNotFoundException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Iterator;
 import java.util.Map;
 
 @Profile("!test")

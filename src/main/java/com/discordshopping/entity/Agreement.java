@@ -71,7 +71,7 @@ public class Agreement {
     // how much has already been paid
     private Double paidSum;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -97,8 +97,6 @@ public class Agreement {
     public String toString() {
         return "Agreement{" +
                 "id=" + id +
-                ", account=" + userAccount +
-                ", product=" + product +
                 ", interestRate=" + interestRate +
                 ", currency=" + currencyCode +
                 ", agreementStatus=" + agreementStatus +

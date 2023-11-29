@@ -1,8 +1,8 @@
 package com.discordshopping.mapper;
 
 import com.discordshopping.entity.UserAccount;
-import com.discordshopping.entity.dto.AccountDto;
-import com.discordshopping.entity.dto.AccountUpdatedDto;
+import com.discordshopping.dto.AccountDto;
+import com.discordshopping.dto.AccountUpdatedDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -1,4 +1,4 @@
-package com.discordshopping.entity.dto;
+package com.discordshopping.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

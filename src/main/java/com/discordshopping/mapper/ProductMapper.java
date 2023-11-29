@@ -1,7 +1,7 @@
 package com.discordshopping.mapper;
 
 import com.discordshopping.entity.Product;
-import com.discordshopping.entity.dto.ProductDto;
+import com.discordshopping.dto.ProductDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

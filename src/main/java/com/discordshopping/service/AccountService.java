@@ -1,9 +1,9 @@
 package com.discordshopping.service;
 
 import com.discordshopping.entity.UserAccount;
-import com.discordshopping.entity.dto.AccountDto;
-import com.discordshopping.entity.dto.AccountUpdatedDto;
-import com.discordshopping.entity.dto.TransactionDto;
+import com.discordshopping.dto.AccountDto;
+import com.discordshopping.dto.AccountUpdatedDto;
+import com.discordshopping.dto.TransactionDto;
 
 public interface AccountService {
 

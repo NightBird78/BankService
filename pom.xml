@@ -111,7 +111,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.4</version>
         </dependency>
 
     </dependencies>
@@ -133,24 +133,24 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.10</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.7</version>
+                        <version>0.8.10</version>
                     </dependency>
                 </dependencies>
                 <configuration>
-<!--                    <excludes>-->
-<!--                        <exclude>com/**/controller/*</exclude>-->
-<!--                        <exclude>com/**/entity/*</exclude>-->
+                    <excludes>
+                        <exclude>com/**/controller/*</exclude>
+                        <exclude>com/**/entity/*</exclude>
 <!--                        <exclude>com/**/aspect/*</exclude>-->
 <!--                        <exclude>com/**/util/*</exclude>-->
 <!--                        <exclude>com/**/enums/*</exclude>-->
 <!--                        <exclude>com/**/exception/*</exclude>-->
 <!--                        <exclude>com/**/BankServiceApplication.class</exclude>-->
-<!--                    </excludes>-->
+                    </excludes>
                     <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
                 </configuration>
                 <executions>
@@ -162,7 +162,7 @@
                     </execution>
                     <execution>
                         <id>jacoco-site</id>
-                        <phase>package</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -171,5 +171,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

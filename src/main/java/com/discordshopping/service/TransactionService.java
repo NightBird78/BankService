@@ -2,8 +2,8 @@ package com.discordshopping.service;
 
 
 import com.discordshopping.entity.Transaction;
-import com.discordshopping.entity.dto.TransactionDto;
-import com.discordshopping.entity.dto.TransactionDtoShort;
+import com.discordshopping.dto.TransactionDto;
+import com.discordshopping.dto.TransactionDtoShort;
 
 import java.util.List;
 

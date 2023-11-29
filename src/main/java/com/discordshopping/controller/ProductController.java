@@ -1,7 +1,7 @@
 package com.discordshopping.controller;
 
 import com.discordshopping.validation.annotation.ValidUUID;
-import com.discordshopping.entity.dto.ProductDto;
+import com.discordshopping.dto.ProductDto;
 import com.discordshopping.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;

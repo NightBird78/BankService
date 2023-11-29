@@ -1,7 +1,7 @@
 package com.discordshopping.service.impl;
 
 import com.discordshopping.entity.Product;
-import com.discordshopping.entity.dto.ProductDto;
+import com.discordshopping.dto.ProductDto;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.ProductMapper;

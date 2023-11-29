@@ -1,9 +1,9 @@
 package com.discordshopping.mapper;
 
 import com.discordshopping.entity.User;
-import com.discordshopping.entity.dto.UserCreatedDto;
-import com.discordshopping.entity.dto.UserDto;
-import com.discordshopping.entity.dto.UserUpdatedDto;
+import com.discordshopping.dto.UserCreatedDto;
+import com.discordshopping.dto.UserDto;
+import com.discordshopping.dto.UserUpdatedDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;

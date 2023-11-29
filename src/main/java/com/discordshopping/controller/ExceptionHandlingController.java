@@ -7,8 +7,6 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.FileAlreadyExistsException;
-
 import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice

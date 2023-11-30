@@ -16,6 +16,7 @@ import java.util.Arrays;
 @Slf4j
 public class LoggingAspect {
 
+
     @Pointcut("execution(public * com.discordshopping.controller.*.*(..))")
     public void controllerLog() {
     }

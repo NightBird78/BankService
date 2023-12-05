@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,21 +26,18 @@ public class SecurityConfigurator {
                         .requestMatchers(
                                 "/",
                                 "/home",
-                                "/swagger")
+                                "/swagger",
+                                "/transaction/api/currency-convert")
                         .permitAll()
                         .anyRequest().authenticated()
+
                 )
-//                .authorizeHttpRequests((authorize) -> authorize
-//                        .anyRequest().authenticated()
-//                )
                 .httpBasic(withDefaults())
                 .formLogin(
                         withDefaults()
-//                        (form) -> form
-//                        .loginPage("/login")
-//                        .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll);
+                .logout(LogoutConfigurer::permitAll)
+                .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

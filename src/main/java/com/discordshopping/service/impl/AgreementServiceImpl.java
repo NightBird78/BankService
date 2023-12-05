@@ -5,7 +5,6 @@ import com.discordshopping.entity.Product;
 import com.discordshopping.entity.UserAccount;
 import com.discordshopping.dto.AgreementCreatedDto;
 import com.discordshopping.dto.AgreementDto;
-import com.discordshopping.dto.AgreementFullDto;
 import com.discordshopping.entity.enums.AgreementStatus;
 import com.discordshopping.entity.enums.CurrencyCode;
 import com.discordshopping.entity.enums.TransactionType;
@@ -85,10 +84,5 @@ public class AgreementServiceImpl implements AgreementService {
 
         return agreementMapper.agreementToDto(agreementRepository.save(agreement));
 
-    }
-
-    @Override
-    public AgreementFullDto findFullDtoById(String id) {
-        return null;
     }
 }

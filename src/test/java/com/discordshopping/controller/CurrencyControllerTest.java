@@ -2,6 +2,7 @@ package com.discordshopping.controller;
 
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.enums.CurrencyCode;
+import com.discordshopping.service.CurrencyService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,8 @@ class CurrencyControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private CurrencyService currencyService;
 
     @Test
     void getCurrency() throws Exception {
@@ -36,6 +39,20 @@ class CurrencyControllerTest {
         Currency expect = new Currency(CurrencyCode.EUR, 4.628);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/currency/get")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("name", "PLN"))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/currency/get")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("name", "ANANAS"))
+                .andReturn();
+
+        assertEquals(400, mvcResult.getResponse().getStatus());
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/currency/get")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("name", "EUR"))
                 .andReturn();
@@ -47,5 +64,28 @@ class CurrencyControllerTest {
 
         assertEquals(expect, actual);
 
+    }
+
+    @Test
+    void existService() {
+        assertTrue(currencyService.existByName(CurrencyCode.EUR));
+    }
+
+    @Test
+    void createService() {
+        currencyService.create(new Currency(CurrencyCode.TRY, 5.));
+
+        assertEquals(5, currencyService.findByName("TRY").price);
+    }
+
+    @Test
+    void updateService() {
+        currencyService.create(new Currency(CurrencyCode.TRY, 5.));
+
+        assertEquals(5, currencyService.findByName("TRY").price);
+
+        currencyService.update(new Currency(CurrencyCode.TRY, 10.));
+
+        assertEquals(10, currencyService.findByName("TRY").price);
     }
 }

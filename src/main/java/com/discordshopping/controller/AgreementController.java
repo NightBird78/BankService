@@ -1,6 +1,5 @@
 package com.discordshopping.controller;
 
-import com.discordshopping.dto.AgreementFullDto;
 import com.discordshopping.validation.annotation.NullField;
 import com.discordshopping.validation.annotation.NumLike;
 import com.discordshopping.validation.annotation.ValidUUID;
@@ -32,11 +31,6 @@ public class AgreementController {
     @GetMapping("/get/detail")
     public AgreementDto getAgreement(@ValidUUID @Param("id") String id) {
         return agreementService.findDtoById(id);
-    }
-
-    @GetMapping("/get/detail/more") // todo: mapper, impl, test
-    public AgreementFullDto getFullAgreement(@ValidUUID @Param("id") String id) {
-        return agreementService.findFullDtoById(id);
     }
 
     @GetMapping("/get/all/by-account")

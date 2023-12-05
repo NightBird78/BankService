@@ -6,8 +6,6 @@ import com.discordshopping.dto.TransactionDtoShort;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Objects;
-
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
@@ -32,9 +30,8 @@ public interface TransactionMapper {
     }
 
     default String getIdba(Transaction transaction, String idba) {
-        if (!Objects.equals(transaction.getDebitUserAccount().getIdba(), idba)) {
-            return transaction.getDebitUserAccount().getIdba();
-        }
-        return transaction.getCreditUserAccount().getIdba();
+        return transaction.getCreditUserAccount().getIdba().equals(idba) ?
+                transaction.getCreditUserAccount().getIdba() :
+                transaction.getDebitUserAccount().getIdba();
     }
 }

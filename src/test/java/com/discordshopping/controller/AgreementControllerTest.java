@@ -17,11 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -86,7 +86,16 @@ class AgreementControllerTest {
         expect.setPaidSum("0.0");
         expect.setDate("2023-05-22T10:30:00");
 
+
         MvcResult mvcResult = mockMvc.perform(
+                        MockMvcRequestBuilders.get("/agreement/get/detail")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("id", "1f606a40-53a1-4a67-a2e0-7bfe4f86d758"))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+        mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.get("/agreement/get/detail")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("id", "1f6f6a40-53a1-4a67-a2e0-7bfe4f86d758"))
@@ -104,21 +113,19 @@ class AgreementControllerTest {
     @Test
     void getAllAgreement() throws Exception {
 
-        List<AgreementDto> expect = new ArrayList<>();
+        AgreementDto expectObj = new AgreementDto(
+                "3c8c492a-42a8-46cf-9e0f-6b20b8b72732",
+                "bobr345",
+                "PersonalLoans",
+                "EUR",
+                "2.4",
+                "Active",
+                "1432.57",
+                "0.0",
+                "2023-11-21T15:45:00"
+        );
 
-        AgreementDto expectObj = new AgreementDto();
-
-        expectObj.setId("3c8c492a-42a8-46cf-9e0f-6b20b8b72732");
-        expectObj.setNickName("bobr345");
-        expectObj.setProductName("PersonalLoans");
-        expectObj.setCurrencyCode("EUR");
-        expectObj.setStatus("Active");
-        expectObj.setSum("1432.57");
-        expectObj.setInterestRate("2.4");
-        expectObj.setPaidSum("0.0");
-        expectObj.setDate("2023-11-21T15:45:00");
-
-        expect.add(expectObj);
+        List<AgreementDto> expect = List.of(expectObj);
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.get("/agreement/get/all/by-account")
@@ -172,6 +179,7 @@ class AgreementControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/agreement/new")
+                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(createDto))
                 .andReturn();

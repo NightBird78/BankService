@@ -41,6 +41,13 @@ class ProductControllerTest {
         expected.setInterestRate("2.5");
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/product/get/detail")
+                        .param("id", "3c127808-032b-a56d-0000-14135278d9c4")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/product/get/detail")
                         .param("id", "3c127808-632b-a56d-6dcb-14135278d9c4")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn();

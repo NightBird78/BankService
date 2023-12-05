@@ -159,11 +159,11 @@ INSERT INTO TRANSACTIONS (id,
                           transaction_description,
                           created_at)
 VALUES ('b87a5714-7aff-1a60-81bd-dca7a4457fb0',
-        'fa5b432e-17aa-86e0-c190-f98fb20b97b0',
         '8812cda8-f70e-e87d-a8d1-438fc870ed56',
+        'fa5b432e-17aa-86e0-c190-f98fb20b97b0',
         'transferFunds',
-        '10.0',
         '400.0',
+        '10.0',
         'for cookies',
         '2023-08-29 21:49:09');
 

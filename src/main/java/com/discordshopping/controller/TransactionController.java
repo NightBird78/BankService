@@ -26,6 +26,7 @@ public class TransactionController {
     public TransactionDto getTransaction(@ValidUUID @Param("id") String id, @ValidIDBA @Param("idba") String idba) {
         return transactionService.findDtoById(id, idba);
     }
+
     @GetMapping("/get/all/by-account")
     public List<TransactionDto> getAllTransactions(@ValidUUID @Param("id") String id) {
         return transactionService.findAllByAccountId(id);
@@ -34,5 +35,14 @@ public class TransactionController {
     @GetMapping("/get/all/by-account/short")
     public List<TransactionDtoShort> getAllShortTransactions(@ValidUUID @Param("id") String id) {
         return transactionService.findAllShortByAccountId(id);
+    }
+
+    @GetMapping("/api/currency-convert")
+    public Double check(
+            @Param("from") String from,
+            @Param("to") String to,
+            @Param("amount") String amount) {
+
+        return (double) ((int) (transactionService.checkTransact(from, to, amount) * 10000)) / 10000;
     }
 }

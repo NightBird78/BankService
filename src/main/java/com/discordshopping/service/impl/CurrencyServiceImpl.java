@@ -27,6 +27,12 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
+    public Currency findByName(CurrencyCode currencyCode) {
+        return currencyRepository.findById(currencyCode)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
+    }
+
+    @Override
     public boolean existByName(CurrencyCode name) {
         return currencyRepository.existsById(name);
     }

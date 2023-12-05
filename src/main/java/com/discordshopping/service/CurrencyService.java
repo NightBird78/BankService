@@ -10,6 +10,7 @@ public interface CurrencyService {
      *             same as id
      */
     Currency findByName(String name);
+    Currency findByName(CurrencyCode currencyCode);
 
     /**
      * @param name its name of CurrencyCode<br>

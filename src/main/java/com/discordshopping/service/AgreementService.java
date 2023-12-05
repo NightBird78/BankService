@@ -3,7 +3,6 @@ package com.discordshopping.service;
 import com.discordshopping.entity.Agreement;
 import com.discordshopping.dto.AgreementCreatedDto;
 import com.discordshopping.dto.AgreementDto;
-import com.discordshopping.dto.AgreementFullDto;
 
 import java.util.List;
 
@@ -16,5 +15,4 @@ public interface AgreementService {
 
     AgreementDto create(AgreementCreatedDto createdDto);
 
-    AgreementFullDto findFullDtoById(String id);
 }

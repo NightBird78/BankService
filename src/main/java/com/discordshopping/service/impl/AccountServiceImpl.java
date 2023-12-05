@@ -1,5 +1,6 @@
 package com.discordshopping.service.impl;
 
+import com.discordshopping.service.CurrencyService;
 import com.discordshopping.util.Util;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.Transaction;
@@ -30,7 +31,7 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final CurrencyRepository currencyRepository;
+    private final CurrencyService currencyService;
     private final AccountMapper accountMapper;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
@@ -121,22 +122,12 @@ public class AccountServiceImpl implements AccountService {
             throw new NotFoundException("currency of user with IDBA: %s, not setted".formatted(toIDBA));
         }
 
-        Optional<Currency> optCf = currencyRepository.findById(fromC);
-        Optional<Currency> optCt = currencyRepository.findById(toC);
-        Optional<Currency> ofC = currencyRepository.findById(CurrencyCode.valueOf(currency));
-
-        if (optCf.isEmpty() || optCt.isEmpty() || ofC.isEmpty()) {
-            throw new NotFoundException("deprecated data");
-        }
-
-        Double fromK = optCf.get().price;
-        Double toK = optCt.get().price;
-        Double ofK = ofC.get().price;
+        Currency ofC = currencyService.findByName(currency);
 
         double amount = Double.parseDouble(amountSrt);
 
-        Double amountT = amount * (ofK / toK);
-        Double amountF = amount * (ofK / fromK);
+        Double amountT = transactionService.checkTransact(ofC.getCurrencyCode(), toC, amount);
+        Double amountF = transactionService.checkTransact(ofC.getCurrencyCode(), fromC, amount);
 
         if (from.getBalance() < amountF) {
             throw new IllegalArgumentException("not enough of money");

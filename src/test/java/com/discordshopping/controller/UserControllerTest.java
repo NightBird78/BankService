@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -57,10 +58,24 @@ class UserControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/user/new")
+                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonDto))
                 .andReturn();
 
+
+        assertEquals(400, mvcResult.getResponse().getStatus());
+
+        create.setEmail("antonM@re.co");
+
+
+        jsonDto = objectMapper.writeValueAsString(create);
+        mvcResult = mockMvc.perform(
+                        MockMvcRequestBuilders.post("/user/new")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonDto))
+                .andReturn();
 
         assertEquals(400, mvcResult.getResponse().getStatus());
 
@@ -69,6 +84,7 @@ class UserControllerTest {
         jsonDto = objectMapper.writeValueAsString(create);
         mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/user/new")
+                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonDto))
                 .andReturn();
@@ -95,7 +111,17 @@ class UserControllerTest {
                 "2014-07-23T18:48:56"
         );
 
+
         MvcResult mvcResult = mockMvc.perform(
+                        MockMvcRequestBuilders.get("/user/get")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("id", "cb09db30-ce1d-467d-0000-60574a0333ac"))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+
+        mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.get("/user/get")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("id", "cb09db30-ce1d-467d-85b3-60574a0333ac"))
@@ -128,6 +154,7 @@ class UserControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/user/update")
+                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("id", "cb09db30-ce1d-467d-85b3-60574a0333ac")
                                 .content(updateJson))

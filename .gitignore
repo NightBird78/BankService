@@ -37,4 +37,5 @@ build/
 
 /testDB.*.db
 /config.json
-/src/main/java/com/discordshopping/trash/
+/*.log
+/trash/

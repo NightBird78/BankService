@@ -31,10 +31,6 @@ public class Util {
         return primaryCode + number;
     }
 
-    public static boolean isValidIDBA(String idba) {
-        return idba.matches("idba[0-9]{16}$");
-    }
-
     public static boolean isValidEmail(String email) {
         return email.matches("[a-z0-9_.]+@[a-z]+\\.[a-z]+$");
     }

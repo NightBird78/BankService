@@ -2,6 +2,7 @@ package com.discordshopping.controller;
 
 import com.discordshopping.exception.*;
 import jakarta.validation.ConstraintViolationException;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +16,7 @@ public class ExceptionHandlingController {
     @ExceptionHandler({
             InvalidUUIDException.class,
             IllegalArgumentException.class,
+            InvalidCurrencyException.class,
             ConstraintViolationException.class,
             NumberFormatException.class,
             AlreadyExistsException.class})

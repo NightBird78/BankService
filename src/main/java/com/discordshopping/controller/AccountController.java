@@ -6,6 +6,8 @@ import com.discordshopping.dto.AccountDto;
 import com.discordshopping.dto.AccountUpdatedDto;
 import com.discordshopping.dto.TransactionDto;
 import com.discordshopping.service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +22,10 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    @Operation(summary = "any response", description = "desc of response")
     @GetMapping("/get/by-user")
-    public AccountDto getByUser(@ValidUUID @Param("id") String id) {
+    public AccountDto getByUser(@Parameter(description = "Id of user")
+            @ValidUUID @Param("id") String id) {
         return accountService.findDtoByUserId(id);
     }
 

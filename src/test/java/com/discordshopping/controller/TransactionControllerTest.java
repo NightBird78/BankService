@@ -2,6 +2,7 @@ package com.discordshopping.controller;
 
 import com.discordshopping.dto.TransactionDto;
 import com.discordshopping.dto.TransactionDtoShort;
+import com.discordshopping.util.PrettyPrinter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,14 @@ class TransactionControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/transaction/get/detail")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("id", "b88a5714-7aff-1a60-0000-dca7a4457fb0")
+                        .param("idba", "IDBA8619893521773869"))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/transaction/get/detail")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .param("id", "b88a5714-7aff-1a60-81bd-dca7a4457fb0")
                         .param("idba", "IDBA8619893521773869"))
                 .andReturn();
@@ -56,6 +65,8 @@ class TransactionControllerTest {
 
         TransactionDto actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
         });
+
+        System.out.println(PrettyPrinter.print(expect));
 
 
         assertEquals(expect, actual);
@@ -78,18 +89,26 @@ class TransactionControllerTest {
                 new TransactionDto(
                         "b87a5714-7aff-1a60-81bd-dca7a4457fb0",
                         "transferFunds",
-                        "morkovka",
-                        "IDBA9162808856195223",
                         "bobr345",
                         "IDBA8619893521773869",
-                        "-10.0",
+                        "morkovka",
+                        "IDBA9162808856195223",
+                        "+10.0",
                         "for cookies",
                         "2023-08-29T21:49:09"
                 )
         );
 
-
         MvcResult mvcResult = mockMvc.perform(
+                        MockMvcRequestBuilders.get("/transaction/get/all/by-account")
+                                .param("id", "fa5b432e-17aa-86e0-0000-f98fb20b97b0")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+
+        mvcResult = mockMvc.perform(
                 MockMvcRequestBuilders.get("/transaction/get/all/by-account")
                         .param("id", "fa5b432e-17aa-86e0-c190-f98fb20b97b0")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -107,11 +126,18 @@ class TransactionControllerTest {
     void getAllShortTransactions() throws Exception {
 
         List<TransactionDtoShort> expected = List.of(
-                new TransactionDtoShort("+400.0", "IDBA9162808856195223"),
-                new TransactionDtoShort("+400.0", "IDBA9162808856195223")
+                new TransactionDtoShort("+400.0", "IDBA8619893521773869"),
+                new TransactionDtoShort("-400.0", "IDBA8619893521773869")
         );
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/transaction/get/all/by-account/short")
+                        .param("id", "8812cda8-0000-e87d-a8d1-438fc870ed56")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertEquals(404, mvcResult.getResponse().getStatus());
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/transaction/get/all/by-account/short")
                         .param("id", "8812cda8-f70e-e87d-a8d1-438fc870ed56")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
@@ -122,6 +148,19 @@ class TransactionControllerTest {
         });
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void check() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/transaction/api/currency-convert")
+                        .param("from", "EUR")
+                        .param("to", "UAH")
+                        .param("amount", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        assertEquals(200, mvcResult.getResponse().getStatus());
+        assertEquals(400., Double.parseDouble(mvcResult.getResponse().getContentAsString()));
 
     }
 }

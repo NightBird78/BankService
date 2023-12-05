@@ -1,4 +1,7 @@
 spring:
+  security:
+    basic:
+      enabled: false
   liquibase:
     enabled: false
   datasource:

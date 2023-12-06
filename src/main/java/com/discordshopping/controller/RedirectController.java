@@ -11,8 +11,18 @@ public class RedirectController {
         return "redirect:/swagger-ui/index.html";
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", "/home"})
     public String redirectTohome() {
-        return "home";
+        return "site/home";
+    }
+
+    @GetMapping("/secure")
+    public String redirectToSecured() {
+        return "/secure/secured";
+    }
+
+    @GetMapping("/about")
+    public String redirectToAbout() {
+        return "site/about";
     }
 }

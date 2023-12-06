@@ -17,7 +17,11 @@ public interface UserService {
 
     boolean existByPasswordAndEmail(String password, String email);
 
+    User findByPasswordAndEmail(String password, String email);
+
     boolean existByEmail(String email);
+
+    User findByEmail(String email);
 
     boolean existById(UUID id);
 

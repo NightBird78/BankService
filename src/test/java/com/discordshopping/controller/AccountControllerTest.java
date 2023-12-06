@@ -5,24 +5,17 @@ import com.discordshopping.dto.AccountUpdatedDto;
 import com.discordshopping.dto.TransactionDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -40,14 +33,6 @@ class AccountControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private WebApplicationContext context;
-
-//    @BeforeEach
-//    public void setup() {
-//        mockMvc = MockMvcBuilders
-//                .webAppContextSetup(context)
-//                .apply(springSecurity())
-//                .build();
-//    }
 
     @Test
     void getByUser() throws Exception {
@@ -121,7 +106,6 @@ class AccountControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/account/update")
-                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("id", "fa5b432e-17aa-86e0-c190-f98fb20b97b0")
                                 .content(objectMapper.writeValueAsBytes(update)))
@@ -141,7 +125,6 @@ class AccountControllerTest {
         // ----- transfer ----- \\
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/account/transfer")
-                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("from", "IDBA8619893521773869")
                                 .param("to", "IDBA9162808856195223")
@@ -176,7 +159,6 @@ class AccountControllerTest {
         mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.get("/account/get")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .with(csrf())
                                 .param("id", "fa5b432e-17aa-86e0-c190-f98fb20b97b0"))
                 .andReturn();
 

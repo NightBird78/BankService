@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -179,7 +178,6 @@ class AgreementControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         MockMvcRequestBuilders.post("/agreement/new")
-                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(createDto))
                 .andReturn();

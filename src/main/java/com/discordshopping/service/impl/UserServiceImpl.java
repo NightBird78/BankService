@@ -61,8 +61,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByPasswordAndEmail(String password, String email) {
+        return userRepository.findUserByPasswordAndEmail(password, email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
+    }
+
+    @Override
     public boolean existByEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
     }
 
     @Override
@@ -94,13 +106,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserCreatedDto dto) {
 
-        try {
-            dto.setPassword(Util.encode(dto.getPassword()).toString());
-        } catch (NoSuchAlgorithmException e) {
-            throw new InternalTechnicalErrorException(ErrorMessage.TECHNICAL_ERROR);
-        }
+        dto.setPassword(Util.encode(dto.getPassword()).toString());
 
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()){
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new AlreadyExistsException(ErrorMessage.DATA_EXIST);
         }
 

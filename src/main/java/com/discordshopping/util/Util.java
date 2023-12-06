@@ -11,8 +11,13 @@ import java.util.regex.Pattern;
 
 public class Util {
 
-    public static UUID encode(String name) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA256");
+    public static UUID encode(String name) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         return UUID.nameUUIDFromBytes(md.digest(name.getBytes()));
     }

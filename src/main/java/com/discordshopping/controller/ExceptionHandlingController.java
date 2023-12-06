@@ -14,7 +14,6 @@ public class ExceptionHandlingController {
 
     @ExceptionHandler({
             NullPointerException.class,
-            AuthenticationException.class,
             InvalidUUIDException.class,
             IllegalArgumentException.class,
             InvalidCurrencyException.class,

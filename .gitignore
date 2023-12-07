@@ -39,3 +39,5 @@ build/
 /config.json
 /*.log
 /trash/
+*.jpeg
+*.png

@@ -31,13 +31,20 @@ public class SecurityConfigurator {
                                 "/site/home",
                                 "/swagger",
                                 "/transaction/api/currency-convert",
-                                "/about",
-                                "/site/about")
+                                "/about/me",
+                                "/about/project",
+                                "/site/bootstrap",
+                                "/style",
+                                "/css/bootstrap.min.css",
+                                "/js/bootstrap.min.js",
+                                "/currency/get/all",
+                                "/login"
+                        )
                         .permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
-                .formLogin(withDefaults())
+                .formLogin((l) -> l.loginPage("/login"))
                 .logout(LogoutConfigurer::permitAll)
                 .csrf(AbstractHttpConfigurer::disable);
 
@@ -52,4 +59,3 @@ public class SecurityConfigurator {
         return authenticationManagerBuilder.build();
     }
 }
-

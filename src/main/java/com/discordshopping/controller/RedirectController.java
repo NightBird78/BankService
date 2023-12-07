@@ -12,17 +12,29 @@ public class RedirectController {
     }
 
     @GetMapping({"/", "/home"})
-    public String redirectTohome() {
+    public String redirectToHome() {
         return "site/home";
     }
 
     @GetMapping("/secure")
     public String redirectToSecured() {
-        return "/secure/secured";
+        return "secure/secured";
     }
 
-    @GetMapping("/about")
-    public String redirectToAbout() {
-        return "site/about";
+    @GetMapping("/about/me")
+    public String redirectToAboutMe() {
+        return "site/about1";
     }
+
+    @GetMapping("/about/project")
+    public String redirectToAboutProject() {
+        return "site/about2";
+    }
+    @GetMapping("/style")
+    public String redirectToBootstrap() {
+        return "site/bootstrap";
+    }
+
+    @GetMapping("/login")
+    public String redirectToLogin() {return "login";}
 }

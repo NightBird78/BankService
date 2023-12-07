@@ -38,7 +38,7 @@ public class PreInitializer implements CommandLineRunner {
         init();
 
         loadCurrency();
-        loadDiscordAPI();
+//        loadDiscordAPI();
     }
 
     private void init() {

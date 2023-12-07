@@ -2,10 +2,13 @@ package com.discordshopping.controller;
 
 import com.discordshopping.exception.*;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -24,6 +27,13 @@ public class ExceptionHandlingController {
         ErrorResponse response = ErrorResponse.builder(ex, BAD_REQUEST, ex.getMessage()).build();
 
         return new ResponseEntity<>(response, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(NOT_FOUND)
+    public String handleException(Exception e, Model model) {
+        System.out.println(e.getMessage());
+        return "redirect:/";
     }
 
     @ExceptionHandler({

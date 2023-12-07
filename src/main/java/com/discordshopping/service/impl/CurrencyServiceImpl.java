@@ -10,6 +10,8 @@ import com.discordshopping.service.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CurrencyServiceImpl implements CurrencyService {
@@ -45,5 +47,10 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public void update(Currency currency) {
         create(currency);
+    }
+
+    @Override
+    public List<CurrencyCode> findAll() {
+        return currencyRepository.findAll().stream().map(Currency::getCurrencyCode).toList();
     }
 }

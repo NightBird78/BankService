@@ -3,6 +3,8 @@ package com.discordshopping.service;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.enums.CurrencyCode;
 
+import java.util.List;
+
 public interface CurrencyService {
 
     /**
@@ -21,4 +23,6 @@ public interface CurrencyService {
     void create(Currency currency);
 
     void update(Currency currency);
+
+    List<CurrencyCode> findAll();
 }

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>About</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .split-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .left-side, .right-side {
+            padding: 2px;
+        }
+
+        .left-side input {
+            margin-left: 1px;
+        }
+    </style>
+</head>
+<body class="bg-secondary text-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand text-warning" href="/home">Мій сайт</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/home">Головна</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link text-white-50" href="/about/me">About me<span class="sr-only">(поточна)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/swagger">open API</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="https://github.com/NightBird78/discordShopping">Git</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Вміст сторінки -->
+<div class="container mt-3">
+    <h1>А теперь немного о проекте</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <ul class="list-group">
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-1 text-light">Зачем?</h4>
+                    <p class="mb-1 text-light">
+                        Проект сделан что-бы обуздать каждый уголок джавы, спринга и баз даных
+                        естественно ничто некогда не идет гладко так сказать<br>
+                        <b>не имеет багов тот - кто нечего не делает</b><br>
+                        Проект имеет API банка, для того чтобы узнать текущий курс валют,<br>
+                        Swagger (OpenAPi) что бы в любой момент можно было зайти
+                        и посмотреть что просит каждый контроллер,<br>
+                        BootStrap что-бы каждый мог посмотреть,<br>
+                        не на классический html а на оформленную страницу
+                    </p>
+                </li>
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-1 text-light">Немного утилит</h4>
+                    <p class="mb-1 text-light">
+                        В проекте также присутствует немного скриптов:<br>
+                        Один с них помогает корректно конвертировать ответ от банка
+                        и передать в базу на хранение.<br>
+                        Второй не менее полезный,
+                        он помогает для LoggingAspect выводить более
+                        структурированный результат по средству PrettyPrint
+                    </p>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul>
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-1 text-light">Пример использования API сервера</h4>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="split-container">
+                                <div class="left-side border-dark">
+                                    <label>
+                                        <input type="text" id="leftInput1" class="form-control" placeholder="100">
+                                    </label>
+                                    <label>
+                                        <input type="text" id="leftInput2" class="form-control" placeholder="EUR">
+                                    </label>
+                                </div>
+                                <div class="right-side  border-dark">
+                                    <label>
+                                        <a id="convert" class="btn btn-primary btn-block">Convert</a>
+                                    </label>
+                                    <label>
+                                        <input type="text" id="rightInput2" class="form-control" placeholder="USD">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>
+                                <input type="text" id="rightInput1" class="form-control" placeholder="result">
+                            </label>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Футер -->
+<footer class="bg-dark text-center mt-5 p-3 text-light">
+    &copy; 2023 Мій сайт. Усі права захищені.
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    $('#convert').on('click', function () {
+        $.ajax({
+            url: '/transaction/api/currency-convert?' + 'from=' + encodeURIComponent(document.getElementById('leftInput2').value) +
+                '&to=' + encodeURIComponent(document.getElementById('rightInput2').value) +
+                '&amount=' + encodeURIComponent(document.getElementById('leftInput1').value),
+            method: 'GET',
+            contentType: 'application/json',
+            success: function (data) {
+                document.getElementById("rightInput1").value = data
+                console.log(data);
+            },
+            error: function (error) {
+                document.getElementById("rightInput1").value = ""
+                console.error('Помилка:', error);
+            }
+        });
+    });
+</script>
+</body>
+</html>

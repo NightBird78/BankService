@@ -23,7 +23,9 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
             <column name="first_name" type="varchar(50)"/>
             <column name="last_name" type="varchar(50)"/>
             <column name="annual_earnings" type="decimal(15,2)"/>
-            <column name="email" type="varchar(60)"/>
+            <column name="email" type="varchar(60)">
+                <constraints unique="true"/>
+            </column>
             <column name="password" type="varchar(36)"/>
             <column name="address" type="varchar(80)"/>
             <column name="created_at" type="timestamp"/>

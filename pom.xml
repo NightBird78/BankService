@@ -165,10 +165,12 @@
                 <version>0.8.11</version>
                 <configuration>
                     <excludes>
-                        <exclude>com/**/controller/*</exclude>
+                        <exclude>com/**/controller/**/*</exclude>
                         <exclude>com/**/entity/*</exclude>
+                        <exclude>com/**/config/*</exclude>
                         <exclude>com/**/dto/*</exclude>
                         <exclude>com/**/bot/*</exclude>
+                        <exclude>com/**/mapper/*</exclude>
                         <exclude>com/**/validation/**</exclude>
                         <exclude>com/**/components/*</exclude>
                         <exclude>com/**/aspect/*</exclude>

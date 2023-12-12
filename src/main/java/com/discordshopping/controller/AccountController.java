@@ -34,13 +34,13 @@ public class AccountController {
         return accountService.findDtoById(id);
     }
 
-    @RequestMapping(value = "/update", method = {RequestMethod.GET, RequestMethod.POST})
+    @PostMapping(value = "/update")
     public AccountDto update(@ValidUUID @Param("id") String id, @RequestBody AccountUpdatedDto accountUpdatedDto) {
         return accountService.merge(accountUpdatedDto, id);
     }
 
     @Transactional
-    @RequestMapping(value = "/transfer", method = {RequestMethod.GET, RequestMethod.POST})
+    @PostMapping(value = "/transfer")
     public TransactionDto transfer(
             @ValidIDBA @Param("from") String from,
             @ValidIDBA @Param("to") String to,

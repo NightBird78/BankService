@@ -38,7 +38,7 @@ public class AgreementController {
         return agreementService.findAllDtoById(id);
     }
 
-    @RequestMapping(value = "/new", method = {RequestMethod.POST, RequestMethod.GET})
+    @PostMapping(value = "/new")
     public AgreementDto createAgreement(@NullField @RequestBody AgreementCreatedDto agreementCreatedDto) {
         return agreementService.create(agreementCreatedDto);
     }

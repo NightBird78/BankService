@@ -11,7 +11,12 @@ public class RedirectController {
         return "redirect:/swagger-ui/index.html";
     }
 
-    @GetMapping({"/", "/home"})
+    @GetMapping("/")
+    public String redirectToH() {
+        return "redirect:/home";
+    }
+
+    @GetMapping("/home")
     public String redirectToHome() {
         return "site/home";
     }
@@ -30,11 +35,24 @@ public class RedirectController {
     public String redirectToAboutProject() {
         return "site/about2";
     }
+
+    @GetMapping("/about/project-result")
+    public String redirectToAboutProject_Result() {
+        return "site/about3";
+    }
+
     @GetMapping("/style")
     public String redirectToBootstrap() {
         return "site/bootstrap";
     }
 
     @GetMapping("/login")
-    public String redirectToLogin() {return "login";}
+    public String redirectToLogin() {
+        return "login";
+    }
+
+    @GetMapping("/register")
+    public String redirectToRegister() {
+        return "register";
+    }
 }

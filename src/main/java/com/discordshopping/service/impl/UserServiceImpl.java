@@ -1,6 +1,7 @@
 package com.discordshopping.service.impl;
 
 import com.discordshopping.exception.AlreadyExistsException;
+import com.discordshopping.exception.InvalidEmailException;
 import com.discordshopping.service.repository.AccountRepository;
 import com.discordshopping.util.Util;
 import com.discordshopping.entity.User;
@@ -108,12 +109,16 @@ public class UserServiceImpl implements UserService {
 
         dto.setPassword(Util.encode(dto.getPassword()).toString());
 
+        if (!Util.isValidEmail(dto.getEmail())) {
+            throw new InvalidEmailException(ErrorMessage.INVALID_EMAIL_FORMAT);
+        }
+
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new AlreadyExistsException(ErrorMessage.DATA_EXIST);
         }
 
         User user = userMapper.dtoToUser(dto);
-        userRepository.save(user);
+        user = userRepository.save(user);
 
         UserAccount uAccount = new UserAccount();
         uAccount.setUser(user);

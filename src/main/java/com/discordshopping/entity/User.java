@@ -26,7 +26,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "tax_code")
+    @Column(name = "tax_code", unique = true)
     private String taxCode;
 
     @Column(name = "user_name")
@@ -41,7 +41,7 @@ public class User {
     @Column(name = "annual_earnings")
     private Double earning;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")

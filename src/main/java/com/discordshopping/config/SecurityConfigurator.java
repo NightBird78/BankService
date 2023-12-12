@@ -26,6 +26,7 @@ public class SecurityConfigurator {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
+                                "/user/new",
                                 "/",
                                 "/home",
                                 "/site/home",
@@ -38,7 +39,9 @@ public class SecurityConfigurator {
                                 "/css/bootstrap.min.css",
                                 "/js/bootstrap.min.js",
                                 "/currency/get/all",
-                                "/login"
+                                "/about/project-result",
+                                "/login",
+                                "/register"
                         )
                         .permitAll()
                         .anyRequest().authenticated()

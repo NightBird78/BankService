@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .placeholder-fg::placeholder {
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="bg-secondary">
+<div class="container mt-5 bg-secondary">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card bg-white border-white"
+                 style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                <div class="card-header text-dark">Register</div>
+                <div class="card-body bg-dark"
+                     style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                        <p th:text="${param.error}">
+                        </p>
+                    </div>
+                        <div class="form-group text-light">
+                            <label for="email">Email:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="email"
+                                   name="email" required placeholder="email">
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="nickName">NickName:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="nickName"
+                                   name="nickName" required placeholder="nickName">
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="taxCode">Tax Code:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="taxCode"
+                                   name="taxCode" required placeholder="xxxxxxxx">
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="firstName">Firstname:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="firstName"
+                                   name="firstName" required placeholder="Firstname">
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="lastName">Lastname:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="lastName"
+                                   name="lastname" required placeholder="Lastname">
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="earning">Earning:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   placeholder="100000" id="earning" required
+                                   name="earning">
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="address">Address:</label>
+                            <input type="text" class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="address"
+                                   name="address" placeholder="address" required>
+                        </div>
+                        <div class="form-group text-light">
+                            <label for="password">Password:</label>
+                            <input type="password"
+                                   class="form-control bg-secondary text-light border-dark placeholder-fg"
+                                   id="password"
+                                   name="password" required placeholder="password">
+                        </div>
+                        <button onclick="sendFormData()" class="btn btn-primary">Register</button>
+                        <a class="p-3" th:href="@{/login}">have an account?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    function sendFormData() {
+
+        const formData = {
+            "email": !!document.getElementById("email").value ?
+                document.getElementById("email").value : null,
+            "nickName": !!document.getElementById("nickName").value ?
+                document.getElementById("nickName").value : null,
+            "taxCode": !!document.getElementById("taxCode").value ?
+                document.getElementById("taxCode").value : null,
+            "firstName": document.getElementById("firstName").value ?
+                document.getElementById("firstName").value : null,
+            "lastName": document.getElementById("lastName").value ?
+                document.getElementById("lastName").value : null,
+            "earning": document.getElementById("earning").value ?
+                document.getElementById("earning").value : null,
+            "address": document.getElementById("address").value ?
+                document.getElementById("address").value : null,
+            "password": document.getElementById("password").value ?
+                document.getElementById("password").value : null
+        };
+
+        fetch('/user/new', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    response.text().then(
+                        result => JSON.parse(result).body.detail,
+                        error => error)
+                        .then((value) => {
+                            const list = value.split(":");
+                            console.log(list)
+                            if ("For input string" === list[0]) {
+                                window.location.href = "/register?error=invalid value for \"Earning\""
+                            } else {
+                                window.location.href = "/register?error=" + list[list.length - 1]
+                            }
+                        });
+                }
+
+                if (response.ok) {
+                    window.location.href = "/login"
+                }
+            })
+    }
+</script>
+</body>
+</html>

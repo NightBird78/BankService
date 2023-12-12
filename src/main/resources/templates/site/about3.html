@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>About</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .split-container {
+            justify-content: space-between;
+            padding: 40px;
+        }
+
+        .left-side, .right-side {
+            padding: 2px;
+        }
+
+        .left-side input {
+            margin-left: 1px;
+        }
+
+
+    </style>
+</head>
+<body class="bg-secondary text-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand text-warning" href="/home">Мій сайт</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/home">Головна</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link text-white-50" href="/about/me">About me<span class="sr-only">(поточна)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/swagger">open API</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="https://github.com/NightBird78/discordShopping">Git</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="split-container mt-3">
+    <h1 style="text-align: center; margin-right: 500px;">От трудностей к успеху</h1>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <ul class="list-group">
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-2 text-light">Процесс</h4>
+                    <p class="mb-2 text-light">
+                        Написание основной логики заключаеться в написании точек вхождения,
+                        которые называються контроллерами, отвечают за обращения к приложению.
+                    </p>
+                    <p class="mb-2 text-light">
+                        Следующий шаг это написание сервисов для реализации работы контроллеров,
+                        нередко сервисы взаимодействуют с репозиториями.
+                    </p>
+                    <p class="mb-2 text-light">
+                        Дальше в обязательном порядке нужны тесты, так как
+                        без тестов будет сложно проверять каждый контроллер и его связующие в ручную и по отдельности.
+                    </p>
+                    <p class="mb-2 text-light">
+                        Обработчики ошибок, их создание полезно для того, чтобы в результате вернуть
+                        не саму ошибку, а более структурированный ее вид, например с более подробным описанием.
+                    </p>
+                    <p class="mb-2 text-light">
+                        Часто бывают нужны некоторые части что могут помочь с мелкими деяниями к примеру валидация данных.
+                    </p>
+                </li>
+            </ul>
+            <ul class="list-group" style="margin-top: 30px">
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-2 text-light">Итог</h4>
+                    <p class="mb-2 text-light">
+                    </p>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul class="list-group">
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-2 text-light">Проблемы</h4>
+                    <p class="mb-2 text-light">
+                        В каждом проекте бывают баги, иногда неочевыдные, чаще неожиданные.
+                    </p>
+                    <p class="mb-2 text-light">
+                        Бывают ситуации когда нужно реализовать специфичный метод с помощью свежих зависимостей или внешних API
+                        а для реализации мало информации в интернете
+                    </p>
+                </li>
+                <li class="list-group-item bg-dark border-white">
+                    <h4 class="mb-2 text-light">Решение</h4>
+                    <p class="mb-2 text-light">
+                        Благодаря тестам большинство ошибок можно отследать, а остальные
+                        это невнимательное заполнение безы даных или банально неверная логика сервиса.<br>
+                        Но бывают ситуации когда нужно просто проанализировать код,
+                        если тест не отработал изза какойто ошибки кода или неверного ввода внешних данных через контроллер.
+                    </p>
+                    <p class="mb-2 text-light">
+                        Зачастую нужно просто найти документацию по инструменту короая скорее всего поможет
+                        но если документация не очень ясна то на помощ всегда прихожит метод научного тыка
+                        или же метод проб и ошибок.
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Футер -->
+<footer class="bg-dark text-center mt-5 p-3 text-light">
+    &copy; 2023 Мій сайт. Усі права захищені.
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

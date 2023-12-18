@@ -23,6 +23,8 @@ public interface UserService {
 
     User findByEmail(String email);
 
+    UserDto findDtoByEmail(String email);
+
     boolean existById(UUID id);
 
     void save(User user);

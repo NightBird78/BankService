@@ -58,7 +58,7 @@ http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="client_id" type="binary(16)">
-                <constraints unique="true" foreignKeyName="client_id" references="users(id)"/>
+                <constraints foreignKeyName="client_id" references="users(id)"/>
             </column>
             <column name="IDBA" type="varchar(20)">
                 <constraints unique="true"/>

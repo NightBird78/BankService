@@ -20,20 +20,22 @@ public class PrettyPrinter {
 
             List<Object> objList = new ArrayList<>();
 
-            Integer padding = 1;
             Integer plusPad = 1;
 
             if (pad.length == 1) {
-                plusPad = pad[0];
+                plusPad += pad[0];
             }
 
-            String spacePad = " ".repeat(Math.max(1, plusPad));
+            String spacePad = " ".repeat(Math.max(0, plusPad));
 
             for (Object object : lo) {
-                objList.add(print(object, padding + plusPad));
+                objList.add(print(object, plusPad));
             }
 
-            return "[" + String.join(", \n\n" + spacePad, objList.stream().map(Object::toString).toList()) + "]";
+            return "[\n"+spacePad + String.join(
+                    ",\n" + spacePad,
+                    objList.stream().map(Object::toString).toList()) + "\n"+spacePad.substring(0,spacePad.length()-1)+"]";
+
         } catch (Throwable ignore) {
         }
 
@@ -49,6 +51,7 @@ public class PrettyPrinter {
             if (pad.length > 0) {
                 plusPad = pad[0];
             }
+
 
             Integer max = list.stream().map(Object::toString).map(String::length).max(Integer::compareTo).orElse(0);
 
@@ -71,7 +74,7 @@ public class PrettyPrinter {
                     objList.add(String.format("{%s :%s %s}",
                             print(object) + repeat,
                             enter,
-                            print(mo.get(object), enter.length())));
+                            print(mo.get(object), max+4)));
                 } else {
                     objList.add(String.format("{%s : %s}",
                             print(object) + repeat,
@@ -79,7 +82,9 @@ public class PrettyPrinter {
                 }
             }
 
-            return String.join(",\n" + " ".repeat(plusPad), objList.stream().map(Object::toString).toList());
+            String padding = plusPad == 0 ? "" : " ".repeat(plusPad);
+
+            return String.join("\n" + padding, objList.stream().map(Object::toString).toList());
         } catch (Throwable ignore) {
         }
 
@@ -99,6 +104,6 @@ public class PrettyPrinter {
             return o.toString();
         }
 
-        return print(map);
+        return print(map, pad);
     }
 }

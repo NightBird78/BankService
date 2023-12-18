@@ -5,6 +5,8 @@ import com.discordshopping.dto.AccountDto;
 import com.discordshopping.dto.AccountUpdatedDto;
 import com.discordshopping.dto.TransactionDto;
 
+import java.util.List;
+
 public interface AccountService {
 
     UserAccount findById(String id);
@@ -28,4 +30,6 @@ public interface AccountService {
     AccountDto merge(AccountUpdatedDto dto, String id);
 
     AccountDto findDtoByUserId(String id);
+
+    List<AccountDto> findAllDtoByEmail(String email);
 }

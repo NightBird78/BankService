@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>About</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        #photo1 {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgb(128, 128, 128);
+            border-radius: 25px;
+            border: solid white;
+        }
+
+        #photo1:hover {
+            background: rgb(34, 139, 34);
+        }
+
+        #photo2 {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgb(128, 128, 128);
+            border-radius: 25px;
+            border: solid white;
+        }
+
+        #photo2:hover {
+            background: rgb(34, 139, 34);
+        }
+
+        .scrollable-container {
+            max-height: 500px; /* Максимальна висота контейнера */
+            border: 3px solid #ccc; /* Обрамлення контейнера */
+            overflow-y: auto; /* Включення вертикальної scrollbar, якщо контент перевищує максимальну висоту */
+        }
+
+
+    </style>
+</head>
+<body class="bg-secondary text-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand text-warning" href="/home">Мій сайт</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/home">Головна</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/about/me">About me</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="/swagger">open API</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="https://github.com/NightBird78/discordShopping">Git</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link text-white-50" href="/cabinet">My cabinet<span class="sr-only">(поточна)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-3" style="margin-left: 50px">
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+            <swiper-container init="false" style="border-radius: 20px; border: solid black;" id="swiper-acc">
+            </swiper-container>
+            <script>
+                const swipeEl = document.querySelector("swiper-container");
+
+
+                const cardPattern = "<div class=\"card bg-white border-white  m-3\"\n" +
+                    "                                         style=\"border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;\">\n" +
+                    "                                        <div class=\"card-header text-dark\">card_name</div>\n" +
+                    "                                        <div class=\"card-body bg-dark\"\n" +
+                    "                                             style=\"border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;\">\n" +
+                    "                                            <label>\n" +
+                    "                                                Currency:\n" +
+                    "                                                <input style=\"width: 45px; border-radius: 5px;\" class=\"border-0 bg-secondary text-light\"\n" +
+                    "                                                       disabled value=\" card_currency\">\n" +
+                    "                                            </label>\n" +
+                    "                                            <label>\n" +
+                    "                                                 Balance:\n" +
+                    "                                                <input style=\"width: 270px; border-radius: 5px;\"\n" +
+                    "                                                       class=\"border-0  bg-secondary text-light\" disabled\n" +
+                    "                                                       value=\" card_balance\">\n" +
+                    "                                            </label>\n" +
+                    "                                            <br>\n" +
+                    "                                            <br>\n" +
+                    "                                            <label>\n" +
+                    "                                                IDBA:\n" +
+                    "                                                <input id='idba' style=\"border-radius: 5px;\" class=\"border-0 bg-secondary text-light\" disabled\n" +
+                    "                                                       value=\" card_idba\">\n" +
+                    "                                            </label>\n" +
+                    "                                        </div>\n" +
+                    "                                    </div>"
+
+
+                const slide = []
+
+                slide.push("<div class=\"card bg-white border-white m-3\"\n" +
+                    "     style=\"border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;\">\n" +
+                    "     <div class=\"card-header text-dark\">new card</div>\n" +
+                    "     <div class=\"card-body bg-dark\"\n" +
+                    "          style=\"border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;\">\n" +
+                    "          <img src=\"https://cdn.discordapp.com/attachments/1148629019642839120/1184456734425751653/768px-OOjs_UI_icon_add.png?ex=658c0a4b&is=6579954b&hm=34862eef6f2d3bc3621f06c65c21ac46b32ee65fac49962a7995aa0e7a3e4be0&\"\n" +
+                    "               alt=\"new\" class=\"img-fluid\" width=\"92px\" onclick=\"redirect1()\" id=\"photo1\">\n" +
+                    "     </div>\n" +
+                    "</div>")
+
+                result = fetch("security/get/email", {
+                    method: "GET",
+                })
+                // 1037faa1-e51e-470a-872f-867b9d502342,
+
+                let jsonList = [];
+
+                result.then(r => {
+                        return r.text()
+                            .then(r => {
+                                    fetch('/account/get/all/by-email?email=' + r, {
+                                            method: 'GET'
+                                        }
+                                    )
+                                        .then(response => response.text()
+                                            .then(r => {
+
+                                                    jsonList = JSON.parse(r);
+                                                    for (const account of jsonList) {
+
+                                                        let card = String(cardPattern);
+
+                                                        card = card.replace("card_balance", account.balance)
+                                                        card = card.replace("card_idba", account.idba)
+                                                        card = card.replace("card_name", account.id.toString().slice(0, 8))
+                                                        card = card.replace("card_currency", !!account.currency ? account.currency : "?")
+
+                                                        slide.push(card)
+                                                    }
+                                                }
+                                            )
+                                        )
+                                }
+                            )
+                    }
+                )
+
+                const swiperParams = {
+                    virtual: {
+                        slides: slide
+                    },
+                    on: {
+                        snapIndexChange: (swiper) => {
+
+                            // ↗
+
+                            // var div = document.createElement('div');
+
+                            // div. = swipeEl.virtual.slides[swiper.activeIndex]
+
+                            let li = []
+
+                            try {
+                                let html = new DOMParser().parseFromString(swipeEl.virtual.slides[swiper.activeIndex], "text/html")
+
+                                let value = html.getElementById("idba").value;
+
+                                value = value.slice(1, value.length)
+
+                                fetch("/transaction/get/all/by-idba/short?idba=" + value, {}
+                                ).then((r) => {
+                                    console.log(r.text())
+
+                                    li = JSON.parse(r.text())
+
+                                })
+
+                            } catch (error) {
+                            }
+
+                            for (const liElement of li) {
+
+                            }
+
+                            const container = document.getElementById('scrollContainer');
+
+
+                            const cardContainer = document.createElement("div");
+                            cardContainer.className = 'card bg-white border-white';
+
+                            const cardHeader = document.createElement('div');
+                            cardHeader.className = 'card-header text-dark';
+                            cardHeader.textContent = "IDBA" + swiper.activeIndex +
+                                swiper.activeIndex + swiper.activeIndex + swiper.activeIndex
+
+                            const cardBody = document.createElement('div');
+                            cardBody.className = 'card-body bg-dark';
+
+                            cardContainer.appendChild(cardHeader);
+                            cardContainer.appendChild(cardBody);
+
+                            try {
+                                container.innerHTML = "";
+                                container.appendChild(cardContainer);
+                            } catch (error) {
+                            }
+                        }
+                    }
+                };
+
+                Object.assign(swipeEl, swiperParams)
+                swipeEl.initialize()
+
+            </script>
+            <swiper-container style="border-radius: 20px; border: solid black; margin-top: 80px;">
+                <swiper-slide>
+                    <div class="card bg-white border-white m-3"
+                         style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+                        <div class="card-header text-dark">new agreement</div>
+                        <div class="card-body bg-dark"
+                             style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+                            <img src="https://cdn.discordapp.com/attachments/1148629019642839120/1184456734425751653/768px-OOjs_UI_icon_add.png?ex=658c0a4b&is=6579954b&hm=34862eef6f2d3bc3621f06c65c21ac46b32ee65fac49962a7995aa0e7a3e4be0&"
+                                 alt="new" class="img-fluid" width="90px" onclick="redirect2()" id="photo2">
+                        </div>
+                    </div>
+                </swiper-slide>
+            </swiper-container>
+        </div>
+        <div class="col-md-6">
+            <div id="scrollContainer" class="scrollable-container" style="margin-left: 100px">
+                <!--            generated content         -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    function redirect1() {
+        window.location.href = "https://google.com"
+    }
+
+    function redirect2() {
+        window.location.href = "https://google.com"
+    }
+
+    function addContent() {
+        const container = document.getElementById('scrollContainer');
+        for (let i = 1; i <= 5; i++) {
+
+            const cardContainer = document.createElement("div");
+            <!--    cardContainer.textContent = "aaa"-->
+            cardContainer.className = 'card bg-white border-white';
+
+            const cardHeader = document.createElement('div');
+            cardHeader.className = 'card-header text-dark';
+            cardHeader.textContent = 'IDBA0000';
+
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body bg-dark';
+
+            cardContainer.appendChild(cardHeader);
+            cardContainer.appendChild(cardBody);
+
+            container.appendChild(cardContainer);
+            // container.appendChild(cardContainer);
+
+            <!--        var cc = document.createElement("p")-->
+            <!--        cc.textContent = "aaa"-->
+            <!--    container.appendChild();-->
+        }
+    }
+
+    addContent();
+
+
+</script>
+</body>
+</html>

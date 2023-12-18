@@ -33,8 +33,13 @@ public class TransactionController {
     }
 
     @GetMapping("/get/all/by-account/short")
-    public List<TransactionDtoShort> getAllShortTransactions(@ValidUUID @Param("id") String id) {
+    public List<TransactionDtoShort> getAllShortTransactionsByAccountId(@ValidUUID @Param("id") String id) {
         return transactionService.findAllShortByAccountId(id);
+    }
+
+    @GetMapping("/get/all/by-idba/short")
+    public List<TransactionDtoShort> getAllShortTransactionsByIdba(@ValidIDBA @Param("idba") String idba) {
+        return transactionService.findAllByIdba(idba);
     }
 
     @GetMapping("/api/currency-convert")

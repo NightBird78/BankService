@@ -1,6 +1,7 @@
 package com.discordshopping.controller;
 
 import com.discordshopping.validation.annotation.NullField;
+import com.discordshopping.validation.annotation.ValidEmail;
 import com.discordshopping.validation.annotation.ValidUUID;
 import com.discordshopping.dto.UserCreatedDto;
 import com.discordshopping.dto.UserDto;
@@ -9,7 +10,6 @@ import com.discordshopping.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,11 @@ public class UserController {
     @GetMapping("/get")
     public ResponseEntity<UserDto> getUserResponse(@ValidUUID @Param("id") String id) {
         return new ResponseEntity<>(userService.findDtoById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/get/by-email")
+    public ResponseEntity<UserDto> getUserByEmail(@ValidEmail @Param("email") String email) {
+        return new ResponseEntity<>(userService.findDtoByEmail(email), HttpStatus.OK);
     }
 
     @PostMapping(value = "/update")

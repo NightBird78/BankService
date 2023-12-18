@@ -14,6 +14,7 @@ public interface TransactionService {
     TransactionDto findDtoById(String id, String idba);
 
     List<TransactionDto> findAllByAccountId(String id);
+    List<TransactionDtoShort> findAllByIdba(String idba);
 
     Transaction save(Transaction transaction);
 

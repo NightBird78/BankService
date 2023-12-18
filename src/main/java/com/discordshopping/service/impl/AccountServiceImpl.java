@@ -1,6 +1,7 @@
 package com.discordshopping.service.impl;
 
 import com.discordshopping.service.CurrencyService;
+import com.discordshopping.service.UserService;
 import com.discordshopping.util.Util;
 import com.discordshopping.entity.Currency;
 import com.discordshopping.entity.Transaction;
@@ -18,11 +19,11 @@ import com.discordshopping.mapper.TransactionMapper;
 import com.discordshopping.service.AccountService;
 import com.discordshopping.service.TransactionService;
 import com.discordshopping.service.repository.AccountRepository;
-import com.discordshopping.service.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +36,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
+    private final UserService userService;
 
     @Override
     public UserAccount findById(String id) {
@@ -169,5 +171,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto findDtoByUserId(String id) {
         return accountMapper.accountToDto(findByUserId(id));
+    }
+
+    @Override
+    public List<AccountDto> findAllDtoByEmail(String email) {
+        return accountMapper.accountToDto(
+                accountRepository.findAllByUserId(
+                        UUID.fromString(
+                                userService.findDtoByEmail(email).getId()
+                        )
+                )
+        );
     }
 }

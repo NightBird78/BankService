@@ -21,11 +21,6 @@ public class RedirectController {
         return "site/home";
     }
 
-    @GetMapping("/secure")
-    public String redirectToSecured() {
-        return "secure/secured";
-    }
-
     @GetMapping("/about/me")
     public String redirectToAboutMe() {
         return "site/about1";
@@ -54,5 +49,10 @@ public class RedirectController {
     @GetMapping("/register")
     public String redirectToRegister() {
         return "register";
+    }
+
+    @GetMapping("/cabinet")
+    public String redirectToCabinet() {
+        return "secure/cabinet";
     }
 }

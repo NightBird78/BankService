@@ -10,7 +10,6 @@ import com.discordshopping.dto.UserCreatedDto;
 import com.discordshopping.dto.UserDto;
 import com.discordshopping.dto.UserUpdatedDto;
 import com.discordshopping.entity.enums.AccountStatus;
-import com.discordshopping.exception.InternalTechnicalErrorException;
 import com.discordshopping.exception.NotFoundException;
 import com.discordshopping.exception.enums.ErrorMessage;
 import com.discordshopping.mapper.UserMapper;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Service
@@ -76,6 +74,11 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
+    }
+
+    @Override
+    public UserDto findDtoByEmail(String email) {
+        return userMapper.userToDto(findByEmail(email));
     }
 
     @Override

@@ -52,6 +52,16 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<TransactionDtoShort> findAllByIdba(String idba) {
+
+        List<Transaction> all = transactionRepository.findAllByIdba(idba);
+
+        return all.stream()
+                .map((t) -> transactionMapper.transactionToShortDto(t, idba))
+                .toList();
+    }
+
+    @Override
     public Transaction save(Transaction transaction) {
         return transactionRepository.save(transaction);
     }

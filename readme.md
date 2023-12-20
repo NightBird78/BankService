@@ -39,7 +39,7 @@ Below are the main dependencies and their technical artifacts:
     - `spring-boot-starter-test` (for tests)
 
 - **Java Discord API:**
-    - `JDA` (version 5.0.0-beta.13)
+    - `JDA` (version 5.0.0-beta.13) (currently disabled)
 
 - **MapStruct:**
     - `mapstruct` (version 1.5.3.Final)

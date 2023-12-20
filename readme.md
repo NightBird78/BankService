@@ -50,3 +50,13 @@ Below are the main dependencies and their technical artifacts:
 
 - **Swagger:**
     - `springdoc-openapi-starter-webmvc-ui` (version 2.0.4)
+
+
+## Usages
+
+Controllers may return different statuses:
+
+- **Exception Statuses**:
+    - `400 Bad Request` Invalid client request, such as incorrect input data
+    - `404 Not Found` Data not found in the database
+    - `500 Internal Server Error` Indicates a critical, unexpected error

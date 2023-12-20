@@ -20,9 +20,11 @@ import com.discordshopping.service.AccountService;
 import com.discordshopping.service.TransactionService;
 import com.discordshopping.service.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -128,15 +130,15 @@ public class AccountServiceImpl implements AccountService {
 
         double amount = Double.parseDouble(amountSrt);
 
-        Double amountT = transactionService.checkTransact(ofC.getCurrencyCode(), toC, amount);
-        Double amountF = transactionService.checkTransact(ofC.getCurrencyCode(), fromC, amount);
+        BigDecimal amountT = transactionService.checkTransact(ofC.getCurrencyCode(), toC, amount);
+        BigDecimal amountF = transactionService.checkTransact(ofC.getCurrencyCode(), fromC, amount);
 
-        if (from.getBalance() < amountF) {
+        if (from.getBalance().compareTo(amountF) < 0) {
             throw new IllegalArgumentException("not enough of money");
         }
 
-        from.setBalance(from.getBalance() - amountF);
-        to.setBalance(to.getBalance() + amountT);
+        from.setBalance(from.getBalance().subtract(amountF));
+        to.setBalance(to.getBalance().add(amountT));
 
         accountRepository.save(from);
         accountRepository.save(to);
@@ -150,6 +152,17 @@ public class AccountServiceImpl implements AccountService {
         transaction.setCreditUserAccount(to);
 
         return transactionMapper.transactionToDto(transactionService.save(transaction), fromIDBA);
+    }
+
+    @Override
+    @Transactional
+    public TransactionDto secureTransfer(String toIDBA, String currency, String amount, String description, String type) {
+
+        String fromIDBA = accountRepository.findByEmail(
+                SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND)).getIdba();
+
+        return transfer(fromIDBA, toIDBA, currency, amount, description, type);
     }
 
     @Override

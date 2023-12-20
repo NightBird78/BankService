@@ -47,12 +47,11 @@ public class AccountController {
     @Transactional
     @PostMapping(value = "/transfer")
     public TransactionDto transfer(
-            @ValidIDBA @Param("from") String from,
             @ValidIDBA @Param("to") String to,
             @Param("desc") String desc,
             @Param("code") String code,
             @Param("amount") String amount,
             @Param("type") String type) {
-        return accountService.transfer(from, to, code, amount, desc, type);
+        return accountService.secureTransfer(to, code, amount, desc, type);
     }
 }

@@ -25,6 +25,8 @@ public interface AccountService {
 
     TransactionDto transfer(String fromIDBA, String toIDBA, String currency, String amount, String description, String type);
 
+    TransactionDto secureTransfer(String toIDBA, String currency, String amount, String description, String type);
+
     AccountDto findDtoById(String id);
 
     AccountDto merge(AccountUpdatedDto dto, String id);

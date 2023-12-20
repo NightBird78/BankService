@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,13 +66,13 @@ public class AgreementServiceImpl implements AgreementService {
 
         agreement.setCurrencyCode(CurrencyCode.valueOf(createdDto.getCurrencyCode()));
         agreement.setAgreementStatus(AgreementStatus.Active);
-        agreement.setAgreementLimit(account.getUser().getEarning() * 10);
+        agreement.setAgreementLimit(account.getUser().getEarning().multiply(BigDecimal.valueOf(10)));
 
-        agreement.setOriginalSum(Double.parseDouble(createdDto.getSum()));
+        agreement.setOriginalSum(BigDecimal.valueOf(Double.parseDouble(createdDto.getSum())));
         agreement.setDiscountRate(Util.check(Double.parseDouble(createdDto.getSum())));
         agreement.setInterestRate(product.getInterestRate() - agreement.getDiscountRate());
         agreement.setSum(agreement.getOriginalSum());
-        agreement.setPaidSum(0.0);
+        agreement.setPaidSum(BigDecimal.ZERO);
 
         accountService.transfer(
                 "IDBA0000000000000000",
@@ -83,6 +84,5 @@ public class AgreementServiceImpl implements AgreementService {
         );
 
         return agreementMapper.agreementToDto(agreementRepository.save(agreement));
-
     }
 }

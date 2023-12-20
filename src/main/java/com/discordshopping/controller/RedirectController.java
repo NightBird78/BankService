@@ -36,11 +36,6 @@ public class RedirectController {
         return "site/about3";
     }
 
-    @GetMapping("/style")
-    public String redirectToBootstrap() {
-        return "site/bootstrap";
-    }
-
     @GetMapping("/login")
     public String redirectToLogin() {
         return "login";

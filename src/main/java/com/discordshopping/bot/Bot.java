@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.awt.Color;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -136,7 +137,7 @@ public class Bot extends ListenerAdapter {
                 String lastName;
                 String email;
                 String address;
-                double earning;
+                BigDecimal earning;
                 String password;
                 try {
                     userId = Util.encode(event.getUser().getId());
@@ -146,7 +147,7 @@ public class Bot extends ListenerAdapter {
                     lastName = Objects.requireNonNull(event.getOption("lastname")).getAsString();
                     email = Objects.requireNonNull(event.getOption("email")).getAsString();
                     address = Objects.requireNonNull(event.getOption("address")).getAsString();
-                    earning = Double.parseDouble(Objects.requireNonNull(event.getOption("earning")).getAsString());
+                    earning = BigDecimal.valueOf(Double.parseDouble(Objects.requireNonNull(event.getOption("earning")).getAsString()));
                     password = Util.encode(
                                     Objects.requireNonNull(event.getOption("password"))
                                             .getAsString()
@@ -172,7 +173,7 @@ public class Bot extends ListenerAdapter {
                 user.setNickName(userName);
                 user.setFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase());
                 user.setLastName(lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase());
-                user.setEarning(earning);
+                user.setEarning( earning);
                 user.setEmail(email);
                 user.setPassword(password);
                 user.setAddress(address.toLowerCase());
@@ -181,7 +182,7 @@ public class Bot extends ListenerAdapter {
 
                 userAccount.setId(UUID.randomUUID());
                 userAccount.setUser(user);
-                userAccount.setBalance(0d);
+                userAccount.setBalance(BigDecimal.ZERO);
                 userAccount.setAccountStatus(AccountStatus.Active);
 
                 if (!userService.create(user)) {

@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,7 +40,7 @@ public class User {
     private String lastName;
 
     @Column(name = "annual_earnings")
-    private Double earning;
+    private BigDecimal earning;
 
     @Column(name = "email", unique = true)
     private String email;

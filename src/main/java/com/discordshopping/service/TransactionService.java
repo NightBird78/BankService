@@ -6,6 +6,7 @@ import com.discordshopping.dto.TransactionDto;
 import com.discordshopping.dto.TransactionDtoShort;
 import com.discordshopping.entity.enums.CurrencyCode;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface TransactionService {
@@ -20,7 +21,7 @@ public interface TransactionService {
 
     List<TransactionDtoShort> findAllShortByAccountId(String id);
 
-    Double checkTransact(String cFrom, String cTo, String amount);
+    BigDecimal checkTransact(String cFrom, String cTo, String amount);
 
-    Double checkTransact(CurrencyCode cFrom, CurrencyCode cTo, Double amount);
+    BigDecimal checkTransact(CurrencyCode cFrom, CurrencyCode cTo, Double amount);
 }

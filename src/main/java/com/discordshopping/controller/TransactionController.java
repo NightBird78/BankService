@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Validated
@@ -43,11 +44,11 @@ public class TransactionController {
     }
 
     @GetMapping("/api/currency-convert")
-    public Double check(
+    public BigDecimal check(
             @Param("from") String from,
             @Param("to") String to,
             @Param("amount") String amount) {
 
-        return (double) ((int) (transactionService.checkTransact(from, to, amount) * 10000)) / 10000;
+        return transactionService.checkTransact(from, to, amount);
     }
 }

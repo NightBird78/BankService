@@ -24,7 +24,7 @@ public class CurrencyServiceImpl implements CurrencyService {
             return currencyRepository.findById(CurrencyCode.valueOf(name.toUpperCase()))
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.DATA_NOT_FOUND));
         } catch (IllegalArgumentException e) {
-            throw new InvalidCurrencyException(ErrorMessage.INVALID_CURRENCY);
+            throw new InvalidCurrencyException(String.format("%s: \"%s\"", ErrorMessage.INVALID_CURRENCY, name));
         }
     }
 

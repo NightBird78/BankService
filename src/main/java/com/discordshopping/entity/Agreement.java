@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -55,20 +56,20 @@ public class Agreement {
 
     // max of account get money, counting as salary * 10 years
     @Column(name = "agreement_limit")
-    private Double agreementLimit;
+    private BigDecimal agreementLimit;
 
     // how many account get money, and how many will pay with interest
     // when it = 0.0, status change to "Completed"
     @Column(name = "sum")
-    private Double sum;
+    private BigDecimal sum;
 
-    @Column(name="original_sum")
     // how many account get money, and how many will pay
-    private Double originalSum;
+    @Column(name="original_sum")
+    private BigDecimal originalSum;
 
-    @Column(name="paid_sum")
     // how much has already been paid
-    private Double paidSum;
+    @Column(name="paid_sum")
+    private BigDecimal paidSum;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

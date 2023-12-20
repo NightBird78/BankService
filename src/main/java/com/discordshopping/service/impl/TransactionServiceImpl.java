@@ -15,8 +15,11 @@ import com.discordshopping.service.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+
+import static com.discordshopping.util.Util.round;
 
 @Service
 @RequiredArgsConstructor
@@ -84,20 +87,29 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Double checkTransact(String cFrom, String cTo, String amount) {
+    public BigDecimal checkTransact(String cFrom, String cTo, String amount) {
         Currency currencyF = currencyService.findByName(cFrom);
         Currency currencyT = currencyService.findByName(cTo);
 
-        return (currencyF.price / currencyT.price) * Double.parseDouble(amount);
+        double doubleAmount;
+
+        try {
+            doubleAmount = Double.parseDouble(amount);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException(String.format("\"%s\" not a number", amount));
+        }
+        return checkTransact(currencyF.getCurrencyCode(), currencyT.getCurrencyCode(), doubleAmount);
     }
 
     @Override
-    public Double checkTransact(CurrencyCode cFrom, CurrencyCode cTo, Double amount) {
+    public BigDecimal checkTransact(CurrencyCode cFrom, CurrencyCode cTo, Double amount) {
         Currency currencyF = currencyService.findByName(cFrom);
         Currency currencyT = currencyService.findByName(cTo);
 
-        return (currencyF.price / currencyT.price) * amount;
+        return round(
+                BigDecimal.valueOf(currencyF.price / currencyT.price)
+                        .multiply(BigDecimal.valueOf(amount)),
+                4
+        );
     }
-
-
 }

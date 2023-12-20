@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -48,14 +49,14 @@ public class Transaction {
     private UserAccount debitUserAccount;
 
     @Column(name = "amount_from")
-    private Double amountFrom;
+    private BigDecimal amountFrom;
 
     @ManyToOne(cascade = {MERGE, PERSIST, REFRESH})
     @JoinColumn(name = "credit_account_id", referencedColumnName = "id")
     private UserAccount creditUserAccount;
 
     @Column(name = "amount_to")
-    private Double amountTo;
+    private BigDecimal amountTo;
 
     @Column(name = "transaction_description")
     private String description;

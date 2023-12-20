@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -126,7 +127,7 @@ public class UserServiceImpl implements UserService {
         UserAccount uAccount = new UserAccount();
         uAccount.setUser(user);
         uAccount.setAccountStatus(AccountStatus.Active);
-        uAccount.setBalance(0.);
+        uAccount.setBalance(BigDecimal.ZERO);
         uAccount.setIdba(Util.createBankIdentifier());
 
         accountRepository.save(uAccount);

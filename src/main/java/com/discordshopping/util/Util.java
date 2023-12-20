@@ -1,12 +1,12 @@
 package com.discordshopping.util;
 
 import com.github.javafaker.Faker;
+import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class Util {
@@ -44,12 +44,39 @@ public class Util {
 
         int num = Integer.parseInt(sum);
         num = num / 1000;
-        return Double.toString((double) num/10);
+        return Double.toString((double) num / 10);
     }
 
     public static double check(Double sum) {
 
         sum = (double) (int) (sum / 1000);
-        return sum/10;
+        return sum / 10;
+    }
+
+    public static BigDecimal round(BigDecimal num, int afterComma) {
+
+        String[] split = num.toString().split("\\.");
+
+        return getBigDecimal(afterComma, split);
+    }
+
+    public static BigDecimal round(Double num, int afterComma) {
+
+        String[] split = Double.toString(num).split("\\.");
+
+        return getBigDecimal(afterComma, split);
+    }
+
+    @NotNull
+    private static BigDecimal getBigDecimal(int afterComma, String[] split) {
+        if (afterComma == 0) {
+            return BigDecimal.valueOf(Long.parseLong(split[0]));
+        }
+        if (split[1].length() > afterComma) {
+            split[1] = split[1].substring(0, afterComma);
+        }
+
+        return BigDecimal.valueOf(Long.parseLong(split[0]))
+                .add(BigDecimal.valueOf(Double.parseDouble("." + split[1])));
     }
 }

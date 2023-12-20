@@ -40,7 +40,7 @@
                 <a class="nav-link text-light" href="/swagger">open API</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-light" href="https://github.com/NightBird78/discordShopping">Git</a>
+                <a class="nav-link text-light" href="https://github.com/NightBird78/BankService">Git</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-light" href="/cabinet">My cabinet</a>
@@ -49,7 +49,6 @@
     </div>
 </nav>
 
-<!-- Вміст сторінки -->
 <div class="container mt-3">
     <h1>А теперь немного о проекте</h1>
 
@@ -124,7 +123,6 @@
 
 </div>
 
-<!-- Футер -->
 <footer class="bg-dark text-center mt-5 p-3 text-light">
     &copy; 2023 Мій сайт. Show must go on!
 </footer>
@@ -146,8 +144,8 @@
                 console.log(data);
             },
             error: function (error) {
-                document.getElementById("rightInput1").value = ""
-                console.error('Помилка:', error);
+                document.getElementById("rightInput1").value = error.responseJSON.body.detail
+                console.error('Помилка:', error.responseJSON);
             }
         });
     });

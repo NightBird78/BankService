@@ -33,9 +33,9 @@
         }
 
         .scrollable-container {
-            max-height: 500px; /* Максимальна висота контейнера */
-            border: 3px solid #ccc; /* Обрамлення контейнера */
-            overflow-y: auto; /* Включення вертикальної scrollbar, якщо контент перевищує максимальну висоту */
+            max-height: 500px;
+            border: 3px solid #ccc;
+            overflow-y: auto;
         }
 
 
@@ -61,7 +61,7 @@
                 <a class="nav-link text-light" href="/swagger">open API</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-light" href="https://github.com/NightBird78/discordShopping">Git</a>
+                <a class="nav-link text-light" href="https://github.com/NightBird78/BankService">Git</a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link text-white-50" href="/cabinet">My cabinet<span class="sr-only">(поточна)</span></a>
@@ -122,7 +122,6 @@
                 result = fetch("security/get/email", {
                     method: "GET",
                 })
-                // 1037faa1-e51e-470a-872f-867b9d502342,
 
                 let jsonList = [];
 
@@ -162,13 +161,6 @@
                     },
                     on: {
                         snapIndexChange: (swiper) => {
-
-                            // ↗
-
-                            // var div = document.createElement('div');
-
-                            // div. = swipeEl.virtual.slides[swiper.activeIndex]
-
                             let li = []
 
                             try {
@@ -258,37 +250,6 @@
     function redirect2() {
         window.location.href = "https://google.com"
     }
-
-    function addContent() {
-        const container = document.getElementById('scrollContainer');
-        for (let i = 1; i <= 5; i++) {
-
-            const cardContainer = document.createElement("div");
-            <!--    cardContainer.textContent = "aaa"-->
-            cardContainer.className = 'card bg-white border-white';
-
-            const cardHeader = document.createElement('div');
-            cardHeader.className = 'card-header text-dark';
-            cardHeader.textContent = 'IDBA0000';
-
-            const cardBody = document.createElement('div');
-            cardBody.className = 'card-body bg-dark';
-
-            cardContainer.appendChild(cardHeader);
-            cardContainer.appendChild(cardBody);
-
-            container.appendChild(cardContainer);
-            // container.appendChild(cardContainer);
-
-            <!--        var cc = document.createElement("p")-->
-            <!--        cc.textContent = "aaa"-->
-            <!--    container.appendChild();-->
-        }
-    }
-
-    addContent();
-
-
 </script>
 </body>
 </html>

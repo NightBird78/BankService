@@ -32,9 +32,9 @@ public class PrettyPrinter {
                 objList.add(print(object, plusPad));
             }
 
-            return "[\n"+spacePad + String.join(
+            return "[\n" + spacePad + String.join(
                     ",\n" + spacePad,
-                    objList.stream().map(Object::toString).toList()) + "\n"+spacePad.substring(0,spacePad.length()-1)+"]";
+                    objList.stream().map(Object::toString).toList()) + "\n" + spacePad.substring(0, spacePad.length() - 1) + "]";
 
         } catch (Throwable ignore) {
         }
@@ -60,7 +60,9 @@ public class PrettyPrinter {
 
                 try {
                     Map<Object, Object> mo2 = (Map<Object, Object>) mo.get(object);
-                    valueMap = true;
+                    if (!mo2.isEmpty()) {
+                        valueMap = true;
+                    }
                 } catch (Throwable ignore) {
                 }
                 String enter = "";
@@ -71,10 +73,12 @@ public class PrettyPrinter {
                 String repeat = " ".repeat(max - object.toString().length());
                 if (mo.get(object) != null) {
 
-                    objList.add(String.format("{%s :%s %s}",
+                    objList.add(String.format("{%s :%s %s%s}",
                             print(object) + repeat,
                             enter,
-                            print(mo.get(object), max+4)));
+                            print(mo.get(object), enter.length()),
+                            valueMap ? "\n" + " ".repeat(plusPad) : ""
+                    ));
                 } else {
                     objList.add(String.format("{%s : %s}",
                             print(object) + repeat,
@@ -82,7 +86,7 @@ public class PrettyPrinter {
                 }
             }
 
-            String padding = plusPad == 0 ? "" : " ".repeat(plusPad);
+            String padding = " ".repeat(plusPad);
 
             return String.join("\n" + padding, objList.stream().map(Object::toString).toList());
         } catch (Throwable ignore) {
@@ -92,7 +96,7 @@ public class PrettyPrinter {
             return o.toString();
         }
 
-        Map<Object, Object> map = null;
+        Map<Object, Object> map;
 
         try {
             map = objectMapper.readValue(
